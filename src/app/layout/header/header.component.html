@@ -1,0 +1,350 @@
+<!-- Header top bar -->
+<header class="w-full sticky top-0 z-50 bg-white/90 backdrop-blur-sm shadow-sm">
+  <div class="max-w-[1200px] mx-auto px-4 md:px-6 lg:px-8">
+    <div class="flex items-center gap-4 h-16">
+      <div class="flex items-center gap-3 min-w-[100px]">
+  <a routerLink="/" class="flex items-center gap-3">
+    <img
+  src="assets/images/logos/auralis-luxe-logo.png"
+  alt="Auralis Luxe Logo"
+  class="h-10 w-auto object-contain select-none"
+  loading="lazy"
+/>
+
+  </a>
+</div>
+
+      <!-- Center: Search (desktop) -->
+      <div class="flex-1 hidden md:flex items-center justify-center">
+        <div class="relative w-full max-w-2xl">
+          <div
+            class="flex items-center bg-white rounded-full border border-gray-200 shadow-sm transition-all duration-300 ease-in-out
+                   focus-within:shadow-md focus-within:border-[#e6cfa1]">
+            <!-- search icon -->
+            <button aria-hidden="true"
+                    class="p-3 text-gray-400">
+              <!-- inline SVG search -->
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none">
+                <path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                      stroke-linejoin="round"/>
+                <circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="1.5" fill="none"></circle>
+              </svg>
+            </button>
+
+            <input
+              (focus)="onSearchFocus()"
+              (blur)="onSearchBlur()"
+              (input)="onSearchInput()"
+              [(ngModel)]="searchQuery"
+              aria-label="Search products or collections"
+              type="text"
+              class="w-full bg-transparent px-3 py-3 text-sm outline-none placeholder:text-gray-400"
+              [placeholder]="!searchFocused ? placeholder : 'Search Auralis Luxe...'"
+            />
+
+            <div class="flex items-center gap-2 pr-2">
+              <button class="text-sm text-gray-500 px-3 py-2 rounded-full hover:bg-gray-50" title="Voice search (future)">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none">
+                  <path d="M12 1v11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                  <path d="M19 11a7 7 0 0 1-14 0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+              </button>
+              <button class="bg-[#d4af37] hover:brightness-95 text-black px-4 py-2 rounded-full text-sm font-semibold">
+                Search
+              </button>
+            </div>
+          </div>
+
+          <!-- suggestions dropdown -->
+          <div *ngIf="suggestionOpen" class="absolute left-0 right-0 mt-2 bg-white rounded-lg shadow-lg border border-gray-100 overflow-hidden">
+            <ul class="divide-y">
+              <li *ngFor="let s of placeholderSuggestions" class="px-4 py-3 hover:bg-gray-50 cursor-pointer" (click)="chooseSuggestion(s)">
+                <div class="text-sm text-gray-800">{{ s }}</div>
+                <div class="text-xs text-gray-400">Popular</div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right icons -->
+      <div class="flex items-center gap-3 ml-auto">
+        <!-- mobile search icon -->
+        <button (click)="searchFocused = !searchFocused" class="md:hidden p-2">
+          <svg class="w-6 h-6 text-gray-700" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="1.5" fill="none"></circle>
+          </svg>
+        </button>
+
+        <!-- wishlist -->
+        <button aria-label="Wishlist" class="relative p-2 hover:bg-gray-50 rounded-full">
+          <svg class="w-6 h-6 text-gray-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.636l1.318-1.318a4.5 4.5 0 116.364 6.364L12 21l-7.682-8.318a4.5 4.5 0 010-6.364z" />
+          </svg>
+          <span *ngIf="wishlistCount" class="absolute -top-1 -right-1 text-[10px] bg-[#d4af37] text-black px-1 rounded"> {{ wishlistCount }} </span>
+        </button>
+
+        <!-- cart -->
+        <button aria-label="Cart" class="relative p-2 hover:bg-gray-50 rounded-full">
+          <svg class="w-6 h-6 text-gray-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 6h14l-2-6M10 21a1 1 0 11-2 0 1 1 0 012 0zm8 0a1 1 0 11-2 0 1 1 0 012 0z"/>
+          </svg>
+          <span *ngIf="cartCount" class="absolute -top-1 -right-1 text-[10px] bg-[#d4af37] text-black px-1 rounded"> {{ cartCount }} </span>
+        </button>
+
+        <!-- vertical separator -->
+        <div class="hidden sm:block h-6 w-px bg-gray-200 mx-2"></div>
+
+        <!-- profile -->
+        <button aria-label="Account" class="flex items-center gap-2 p-2 hover:bg-gray-50 rounded-full">
+          <div class="w-8 h-8 rounded-full bg-[#f4f0e6] flex items-center justify-center text-sm font-semibold text-[#6c4f1b]">N</div>
+          <div class="hidden sm:flex flex-col text-left">
+            <span class="text-xs text-gray-700">Hello,</span>
+            <span class="text-sm font-medium text-[#1b1b1b]">Sign in</span>
+          </div>
+        </button>
+
+        <!-- mobile hamburger -->
+        <button class="md:hidden p-2 ml-1" (click)="toggleMobileMenu()" aria-label="Open menu">
+          <svg class="w-7 h-7 text-gray-700" viewBox="0 0 24 24" fill="none">
+            <path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mega nav (sticky to header) -->
+  <nav class="w-full bg-white border-t border-b border-gray-100">
+    <div class="max-w-[1200px] mx-auto px-4 md:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-14">
+        <!-- nav items -->
+        <ul class="flex items-center gap-4 text-sm font-medium text-gray-700">
+          <li class="relative group"
+              (mouseenter)="openMegaMenu('necklaces')" (mouseleave)="closeMegaMenu()">
+            <button class="px-3 py-2 hover:text-[#d4af37]">Necklaces</button>
+
+            <!-- mega dropdown -->
+            <div *ngIf="openMega === 'necklaces'"
+                 class="absolute left-0 mt-2 w-[920px] bg-white rounded-lg shadow-lg border border-gray-100 p-6"
+                 (mouseenter)="openMegaMenu('necklaces')" (mouseleave)="closeMegaMenu()">
+              <div class="grid grid-cols-4 gap-6">
+                <div>
+                  <h4 class="text-sm font-semibold mb-3">By Collection</h4>
+                  <ul class="text-sm space-y-2 text-gray-600">
+                    <li><a class="hover:text-[#d4af37]">Everyday Elegance</a></li>
+                    <li><a class="hover:text-[#d4af37]">Statement Pieces</a></li>
+                    <li><a class="hover:text-[#d4af37]">Minimalist</a></li>
+                    <li><a class="hover:text-[#d4af37]">Bridal</a></li>
+                  </ul>
+                </div>
+                <div>
+                  <h4 class="text-sm font-semibold mb-3">By Material</h4>
+                  <ul class="text-sm space-y-2 text-gray-600">
+                    <li><a class="hover:text-[#d4af37]">Lab-grown Diamonds</a></li>
+                    <li><a class="hover:text-[#d4af37]">18k Yellow Gold</a></li>
+                    <li><a class="hover:text-[#d4af37]">Rose Gold</a></li>
+                    <li><a class="hover:text-[#d4af37]">White Gold</a></li>
+                  </ul>
+                </div>
+                <div>
+                  <h4 class="text-sm font-semibold mb-3">Featured</h4>
+                  <div class="space-y-3">
+                    <div class="flex items-center gap-3">
+                      <img src="/assets/sample-necklace-1.jpg" alt="necklace" class="w-14 h-14 rounded-md object-cover"/>
+                      <div>
+                        <div class="text-sm font-medium">Halo Solitaire</div>
+                        <div class="text-xs text-gray-500">From ₹29,999</div>
+                      </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                      <img src="/assets/sample-necklace-2.jpg" alt="necklace" class="w-14 h-14 rounded-md object-cover"/>
+                      <div>
+                        <div class="text-sm font-medium">Minimal Drop</div>
+                        <div class="text-xs text-gray-500">From ₹12,499</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-span-1 flex flex-col justify-center">
+                  <div class="bg-gradient-to-br from-[#fffaf3] to-[#f6e9c9] rounded-lg p-4">
+                    <div class="text-xs text-[#6c4f1b] font-semibold">Gifting Guide</div>
+                    <div class="text-sm font-bold mt-2">Find the perfect anniversary gift</div>
+                    <button class="mt-3 bg-[#d4af37] px-3 py-2 rounded text-black text-sm font-semibold">Explore Gifts</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </li>
+
+          <!-- Earrings -->
+          <li class="relative group"
+              (mouseenter)="openMegaMenu('earrings')" (mouseleave)="closeMegaMenu()">
+            <button class="px-3 py-2 hover:text-[#d4af37]">Earrings</button>
+
+            <div *ngIf="openMega === 'earrings'"
+                 class="absolute left-0 mt-2 w-[720px] bg-white rounded-lg shadow-lg border border-gray-100 p-6"
+                 (mouseenter)="openMegaMenu('earrings')" (mouseleave)="closeMegaMenu()">
+              <div class="grid grid-cols-3 gap-6">
+                <div>
+                  <h4 class="text-sm font-semibold mb-3">By Style</h4>
+                  <ul class="text-sm space-y-2 text-gray-600">
+                    <li><a class="hover:text-[#d4af37]">Studs</a></li>
+                    <li><a class="hover:text-[#d4af37]">Hoops</a></li>
+                    <li><a class="hover:text-[#d4af37]">Drops</a></li>
+                    <li><a class="hover:text-[#d4af37]">Chandeliers</a></li>
+                  </ul>
+                </div>
+                <div>
+                  <h4 class="text-sm font-semibold mb-3">Collections</h4>
+                  <ul class="text-sm space-y-2 text-gray-600">
+                    <li><a class="hover:text-[#d4af37]">Everyday</a></li>
+                    <li><a class="hover:text-[#d4af37]">Bridal</a></li>
+                    <li><a class="hover:text-[#d4af37]">Gifts</a></li>
+                  </ul>
+                </div>
+                <div>
+                  <img src="/assets/sample-earring-1.jpg" class="w-full rounded-md object-cover" alt="earrings"/>
+                </div>
+              </div>
+            </div>
+          </li>
+
+          <!-- Pendants -->
+          <li class="relative group" (mouseenter)="openMegaMenu('pendants')" (mouseleave)="closeMegaMenu()">
+            <button class="px-3 py-2 hover:text-[#d4af37]">Pendants</button>
+
+            <div *ngIf="openMega === 'pendants'" class="absolute left-0 mt-2 w-[640px] bg-white rounded-lg shadow-lg border border-gray-100 p-6"
+                 (mouseenter)="openMegaMenu('pendants')" (mouseleave)="closeMegaMenu()">
+              <div class="grid grid-cols-3 gap-6">
+                <div>
+                  <h4 class="text-sm font-semibold mb-3">Styles</h4>
+                  <ul class="text-sm space-y-2 text-gray-600">
+                    <li><a class="hover:text-[#d4af37]">Solitaire</a></li>
+                    <li><a class="hover:text-[#d4af37]">Locket</a></li>
+                    <li><a class="hover:text-[#d4af37]">Initials</a></li>
+                  </ul>
+                </div>
+                <div>
+                  <h4 class="text-sm font-semibold mb-3">Materials</h4>
+                  <ul class="text-sm space-y-2 text-gray-600">
+                    <li><a class="hover:text-[#d4af37]">Diamond</a></li>
+                    <li><a class="hover:text-[#d4af37]">Gold</a></li>
+                    <li><a class="hover:text-[#d4af37]">Rose Gold</a></li>
+                  </ul>
+                </div>
+                <div>
+                  <img src="/assets/sample-pendant-1.jpg" class="w-full rounded-md object-cover" alt="pendant"/>
+                </div>
+              </div>
+            </div>
+          </li>
+
+          <!-- Collections -->
+          <li class="relative group" (mouseenter)="openMegaMenu('collections')" (mouseleave)="closeMegaMenu()">
+            <button class="px-3 py-2 hover:text-[#d4af37]">Collections</button>
+
+            <div *ngIf="openMega === 'collections'" class="absolute left-0 mt-2 w-[760px] bg-white rounded-lg shadow-lg border border-gray-100 p-6"
+                 (mouseenter)="openMegaMenu('collections')" (mouseleave)="closeMegaMenu()">
+              <div class="grid grid-cols-4 gap-6">
+                <div>
+                  <h4 class="text-sm font-semibold mb-3">Curated</h4>
+                  <ul class="text-sm space-y-2 text-gray-600">
+                    <li><a class="hover:text-[#d4af37]">Heritage</a></li>
+                    <li><a class="hover:text-[#d4af37]">Modern Minimal</a></li>
+                    <li><a class="hover:text-[#d4af37]">Designer Edit</a></li>
+                  </ul>
+                </div>
+                <div class="col-span-2">
+                  <h4 class="text-sm font-semibold mb-3">Featured Picks</h4>
+                  <div class="grid grid-cols-2 gap-4">
+                    <div class="flex items-center gap-3">
+                      <img src="/assets/sample-feature-1.jpg" class="w-20 h-20 rounded-md object-cover"/>
+                      <div><div class="text-sm font-medium">Signature Ring</div><div class="text-xs text-gray-500">Best seller</div></div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                      <img src="/assets/sample-feature-2.jpg" class="w-20 h-20 rounded-md object-cover"/>
+                      <div><div class="text-sm font-medium">Elegant Pendant</div><div class="text-xs text-gray-500">New</div></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="flex flex-col justify-center">
+                  <button class="bg-[#d4af37] px-3 py-2 rounded text-black text-sm font-semibold">Shop Collections</button>
+                </div>
+              </div>
+            </div>
+          </li>
+
+          <!-- Gifting -->
+          <li class="relative group" (mouseenter)="openMegaMenu('gifting')" (mouseleave)="closeMegaMenu()">
+            <button class="px-3 py-2 hover:text-[#d4af37]">Gifting</button>
+
+            <div *ngIf="openMega === 'gifting'" class="absolute left-0 mt-2 w-[520px] bg-white rounded-lg shadow-lg border border-gray-100 p-6"
+                 (mouseenter)="openMegaMenu('gifting')" (mouseleave)="closeMegaMenu()">
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <h4 class="text-sm font-semibold mb-3">For every occasion</h4>
+                  <ul class="text-sm space-y-2 text-gray-600">
+                    <li><a class="hover:text-[#d4af37]">Anniversary</a></li>
+                    <li><a class="hover:text-[#d4af37]">Birthday</a></li>
+                    <li><a class="hover:text-[#d4af37]">Proposal</a></li>
+                  </ul>
+                </div>
+                <div>
+                  <div class="bg-[#fffaf3] rounded-md p-4">
+                    <div class="text-sm font-semibold text-[#6c4f1b]">Gift Finder</div>
+                    <div class="text-xs text-gray-600 mt-2">Tell us the occasion</div>
+                    <button class="mt-3 bg-[#d4af37] px-3 py-2 rounded text-black text-sm font-semibold">Find Gift</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </li>
+        </ul>
+
+        <!-- right side small links -->
+        <div class="hidden md:flex items-center gap-3">
+          <a class="text-sm text-gray-600 hover:text-[#d4af37]">Stores</a>
+          <a class="text-sm text-gray-600 hover:text-[#d4af37]">Offers</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Mobile slide-over menu -->
+  <div *ngIf="mobileMenuOpen" class="md:hidden fixed inset-0 z-50 bg-black/40">
+    <div class="absolute left-0 top-0 bottom-0 w-80 bg-white p-4 overflow-auto">
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm"
+               style="background: linear-gradient(135deg,#fffaf3,#f6e9c9); color:#6c4f1b;">
+            AL
+          </div>
+          <div>
+            <div class="text-sm font-semibold">Auralis</div>
+            <div class="text-xs text-gray-500">Luxe</div>
+          </div>
+        </div>
+        <button (click)="toggleMobileMenu()" class="p-2">
+          ✕
+        </button>
+      </div>
+
+      <nav class="space-y-2">
+        <a class="block py-2 px-3 rounded hover:bg-gray-50">Necklaces</a>
+        <a class="block py-2 px-3 rounded hover:bg-gray-50">Earrings</a>
+        <a class="block py-2 px-3 rounded hover:bg-gray-50">Pendants</a>
+        <a class="block py-2 px-3 rounded hover:bg-gray-50">Collections</a>
+        <a class="block py-2 px-3 rounded hover:bg-gray-50">Gifting</a>
+      </nav>
+
+      <hr class="my-4" />
+      <div>
+        <a class="block py-2">Sign in</a>
+        <a class="block py-2">Wishlist</a>
+        <a class="block py-2">Cart</a>
+      </div>
+    </div>
+  </div>
+</header>

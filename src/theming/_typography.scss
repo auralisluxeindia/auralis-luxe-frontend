@@ -1,0 +1,12 @@
+@use '@angular/material' as mat;
+@use './_palette' as palette;
+@use './_typography' as typo;
+
+$auralis-luxe-theme: mat.define-theme((
+  color: (
+    theme-type: light,
+    color-scheme: palette.$auralis-color-scheme,
+  ),
+  typography: typo.$auralis-typography,
+  density: (scale: 0),
+));

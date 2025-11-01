@@ -1,1 +1,37 @@
-/* You can add global styles to this file, and also import other style files */
+@use "@angular/material" as mat;
+@use "./theming/theme.scss" as customTheme;
+
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+@include mat.core();
+
+@include mat.color-variants-backwards-compatibility(customTheme.$light-theme);
+
+:root {
+  @include mat.all-component-themes(customTheme.$light-theme);
+  @include mat.typography-hierarchy(customTheme.$light-theme);
+  @include mat.system-level-colors(customTheme.$light-theme);
+  @include mat.system-level-typography(customTheme.$light-theme);
+  --mat-app-background: #fffdf8;
+}
+
+
+body.light-theme {
+  @include mat.typography-hierarchy(customTheme.$light-theme);
+}
+
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  background: linear-gradient(135deg, #fffdf8 0%, #f8f6f3 50%, #f4efe9 100%) !important;
+  color: #1a1a1a;
+
+
+
+}

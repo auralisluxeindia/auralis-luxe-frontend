@@ -1,0 +1,11 @@
+:host {
+  display: block;
+}
+
+nav ul > li > div {
+  z-index: 1000;
+}
+
+nav ul > li > div {
+  transition: opacity 160ms ease, transform 160ms ease;
+}

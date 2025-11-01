@@ -1,0 +1,42 @@
+/* This file is used to define the custom colors for the application, 
+    specifically for all the components that come from Angular Material we are going with light white
+    colured theme for premium look. 
+*/
+@use '@angular/material' as mat;
+
+$auralis-primary-colors: (
+  0: #ffffff,
+  10: #fef9f2,
+  20: #f5e8c7,
+  30: #e6cfa1,
+  40: #d4b677,
+  50: #c29c4c,
+  60: #a88439,
+  70: #8c6d2c,
+  80: #70561f,
+  90: #574113,
+  100: #3c2e09,
+);
+
+$auralis-secondary-colors: (
+  0: #ffffff,
+  10: #f4f4f4,
+  20: #d9d9d9,
+  30: #bfbfbf,
+  40: #a6a6a6,
+  50: #8c8c8c,
+  60: #737373,
+  70: #595959,
+  80: #404040,
+  90: #262626,
+  100: #0d0d0d,
+);
+
+$auralis-color-scheme: (
+  primary: $auralis-primary-colors,
+  secondary: $auralis-secondary-colors,
+  tertiary: mat.$cyan-palette,
+  error: mat.$red-palette,
+  neutral: mat.$grey-palette,
+  neutral-variant: mat.$blue-grey-palette,
+);
