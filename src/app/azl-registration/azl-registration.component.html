@@ -128,67 +128,89 @@
         <div class="col-md-6 form-section">
       <img src="../../assets/images/logos/auralis-luxe-logo.png" width="140px" alt="" srcset="" class="registration-card__main-logo">
       <div class="registration-card" *ngIf="!showOtpSection" [@slideInOut]="formState">
-        <h2 class="registration-card__heading">Create Your Account</h2>
-        <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()" class="rzm-registration-form">
-          <mat-form-field appearance="outline" class="full-width" subscriptSizing="dynamic">
-            <mat-label>Full Name</mat-label>
-            <input matInput formControlName="full_name" required>
-            @if (registrationForm.get('full_name')?.hasError('required')) {
-              <mat-error>Full Name is required</mat-error>
-            }
-            @else if (registrationForm.get('full_name')?.hasError('minlength')) {
-              <mat-error>Full Name must be at least 4 characters long</mat-error>
-            }
-          </mat-form-field>
-          <mat-form-field appearance="outline" class="full-width" subscriptSizing="dynamic">
-            <mat-label>Email</mat-label>
-            <input matInput type="email" formControlName="email" required>
-            @if (registrationForm.get('email')?.hasError('required')) {
-              <mat-error>Email is required</mat-error>
-            }
-            @else if (registrationForm.get('email')?.hasError('email')) {
-              <mat-error>Invalid email</mat-error>
-            }
-          </mat-form-field>
-          <mat-form-field appearance="outline" class="full-width" subscriptSizing="dynamic">
-            <mat-label>Password</mat-label>
-            <input matInput type="password" formControlName="password" required>
-            @if (registrationForm.get('password')?.hasError('required')) {
-              <mat-error>Password is required</mat-error>
-            }
-            @else if (registrationForm.get('password')?.hasError('minlength')) {
-              <mat-error>Password must be at least 6 characters long</mat-error>
-            }
-            @else if (registrationForm.get('password')?.hasError('maxlength')) {
-              <mat-error>Password must be no more than 16 characters long</mat-error>
-            }
-          </mat-form-field>
-          <button
-  mat-raised-button
+
+  <h2 class="registration-card__heading">
+    {{ adminInviteMode ? 'Complete Your Admin Signup' : 'Create Your Account' }}
+  </h2>
+
+  <p *ngIf="adminInviteMode" class="text-gray-600 text-sm mb-4" style="max-width: 70%; margin: 0 auto;">
+    You’ve been invited as an admin on <strong>Auralis Luxe</strong>.  
+    Please set your password to activate your account.
+  </p>
+
+  <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()" class="rzm-registration-form">
+
+    <ng-container *ngIf="!adminInviteMode">
+      <mat-form-field appearance="outline" class="full-width" subscriptSizing="dynamic">
+        <mat-label>Full Name</mat-label>
+        <input matInput formControlName="full_name" required>
+        @if (registrationForm.get('full_name')?.hasError('required')) {
+          <mat-error>Full Name is required</mat-error>
+        }
+        @else if (registrationForm.get('full_name')?.hasError('minlength')) {
+          <mat-error>Full Name must be at least 4 characters long</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width" subscriptSizing="dynamic">
+        <mat-label>Email</mat-label>
+        <input matInput type="email" formControlName="email" required>
+        @if (registrationForm.get('email')?.hasError('required')) {
+          <mat-error>Email is required</mat-error>
+        }
+        @else if (registrationForm.get('email')?.hasError('email')) {
+          <mat-error>Invalid email</mat-error>
+        }
+      </mat-form-field>
+    </ng-container>
+
+    <mat-form-field appearance="outline" class="full-width" subscriptSizing="dynamic">
+      <mat-label>Password</mat-label>
+      <input matInput type="password" formControlName="password" required>
+      @if (registrationForm.get('password')?.hasError('required')) {
+        <mat-error>Password is required</mat-error>
+      }
+      @else if (registrationForm.get('password')?.hasError('minlength')) {
+        <mat-error>Password must be at least 6 characters long</mat-error>
+      }
+      @else if (registrationForm.get('password')?.hasError('maxlength')) {
+        <mat-error>Password must be no more than 16 characters long</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field *ngIf="adminInviteMode" appearance="outline" class="full-width" subscriptSizing="dynamic">
+      <mat-label>Confirm Password</mat-label>
+      <input matInput type="password" formControlName="confirm_password" required>
+    </mat-form-field>
+
+    <button
+      mat-raised-button
   color="primary"
   class="submit-button"
-  type="submit"
-  [ngStyle]="{
-    cursor: (loading || cooldown > 0) ? 'not-allowed' : 'pointer',
-    'pointer-events': (loading || cooldown > 0) ? 'none' : 'auto'
-  }"
->
-  @if (loading) {
-    <div class="loader"></div>
-  }
-  @else if (cooldown > 0) {
-    <span>Wait {{ cooldown }}s</span>
-  }
-  @else {
-    <span>Submit</span>
-  }
-</button>
+      type="submit"
+      [ngStyle]="{
+        cursor: (loading || cooldown > 0) ? 'not-allowed' : 'pointer',
+        'pointer-events': (loading || cooldown > 0) ? 'none' : 'auto'
+      }"
+    >
+      @if (loading) {
+        <div class="message" style="padding: 12px 0; color: #fff;">Please wait</div>
+      }
+      @else if (cooldown > 0) {
+        <span>Wait {{ cooldown }}s</span>
+      }
+      @else {
+        <span>{{ adminInviteMode ? 'Complete Signup' : 'Submit' }}</span>
+      }
+    </button>
 
-          <a href="/login" class="rzm-registration-form__already-have-account">Already have account? Login</a>
-        </form>
-        
-        
-      </div>
+    <!-- Already have account -->
+    <a *ngIf="!adminInviteMode" href="/login" class="rzm-registration-form__already-have-account">
+      Already have an account? <span>Login</span>
+    </a>
+  </form>
+</div>
+
       <div *ngIf="showOtpSection" class="rzm-otp-section" [@slideInOut]="formState">
         <img src="../../assets/images/login-cataloge/otp-verification.png" width="100" style="margin: 50px auto 10px;" alt="OTP Icon" srcset="">
         <h2 class="rzm-otp-section__heading" style="color: #010101;">Check your inbox</h2>

@@ -18,8 +18,16 @@ export const routes: Routes = [
         (m) => m.AzlRegistrationModule
       ),
   },
+    {
+    path: 'dashboard',
+    loadChildren: () =>
+      import('./azl-post-login/azl-post-login.module').then(
+        (m) => m.AzlPostLoginModule
+      ),
+  },
   {
     path: '**',
     redirectTo: '',
   },
+
 ];

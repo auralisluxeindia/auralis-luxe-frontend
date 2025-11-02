@@ -1,8 +1,10 @@
 import { Component, OnDestroy, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
+import { Subscription } from 'rxjs';
+import { AzlAuthenticationService } from '../../core/services/azl-authentication.service';
 
 @Component({
   selector: 'app-header',
@@ -32,10 +34,19 @@ export class HeaderComponent implements OnDestroy {
 
   wishlistCount = 3;
   cartCount = 2;
+  private userSub!: Subscription;
 
-  constructor() {
+
+  constructor(private router: Router, private _azlAuth: AzlAuthenticationService) {
     this.startPlaceholderRotation();
   }
+
+  ngOnInit() {
+    this.userSub = this._azlAuth.currentUser$.subscribe(user => {
+      this.user = user;
+    });
+  }
+
 
   startPlaceholderRotation() {
     this.placeholderTimer = setInterval(() => {
@@ -92,6 +103,7 @@ export class HeaderComponent implements OnDestroy {
 
   ngOnDestroy(): void {
     this.stopPlaceholderRotation();
+    this.userSub?.unsubscribe();
   }
 
   startVoiceSearch() {
@@ -120,6 +132,34 @@ export class HeaderComponent implements OnDestroy {
   };
 
   recognition.start();
+}
+isMenuOpen = false;
+  user = JSON.parse(localStorage.getItem('azl_user') || 'null');
+
+
+  toggleMenu() {
+    this.isMenuOpen = !this.isMenuOpen;
+  }
+
+  goTo(path: string) {
+    console.log('Navigating to:', path);
+    this.router.navigate([path]);
+    this.isMenuOpen = false;
+  }
+
+  logout() {
+    localStorage.removeItem('azl_token');
+    localStorage.removeItem('azl_user');
+    this.isMenuOpen = false;
+    this.router.navigate(['/login']);
+  }
+  handleAccountClick() {
+  if (!this.user || !this.user?.email) {
+    this.router.navigate(['/login']);
+    return;
+  }
+
+  this.isMenuOpen = !this.isMenuOpen;
 }
 
 }

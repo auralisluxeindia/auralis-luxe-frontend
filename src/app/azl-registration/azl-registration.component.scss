@@ -540,13 +540,13 @@ background: linear-gradient(to bottom, rgba(255, 255, 255, 0.9), rgba(255, 255, 
   border-radius: 8px;
   font-weight: 600;
   color: #fff !important;
-  background: linear-gradient(135deg, #f8b4c5 0%, #e4a1b2 60%, #f5b9c9 100%);
+  background: linear-gradient(135deg, #f8b4c5 0%, #91203d 60%, #f5b9c9 100%);
   box-shadow: 0 3px 6px rgba(228, 161, 178, 0.4);
   transition: all 0.3s ease;
 }
 
 .submit-button:hover {
-  background: linear-gradient(135deg, #e4a1b2 0%, #d98c9f 50%, #e4a1b2 100%);
+  background: linear-gradient(135deg, #91203d 0%, #d98c9f 50%, #91203d 100%);
   box-shadow: 0 4px 10px rgba(228, 161, 178, 0.6);
   transform: translateY(-1px);
 }
@@ -684,3 +684,53 @@ background: linear-gradient(to bottom, rgba(255, 255, 255, 0.9), rgba(255, 255, 
     }
   }
  
+  .luxury-btn {
+  background: linear-gradient(135deg, #91203d, #a83254);
+  color: #fff;
+  border: none;
+  outline: none;
+  width: 100%;
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: 0.3px;
+  padding: 0.85rem 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(145, 32, 61, 0.35);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-transform: capitalize;
+
+  &:hover:not(:disabled) {
+    background: linear-gradient(135deg, #7c1b34, #b13d5c);
+    box-shadow: 0 8px 20px rgba(145, 32, 61, 0.45);
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 12px rgba(145, 32, 61, 0.3);
+  }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+}
+
+.loader {
+  border: 3px solid #fff;
+  border-top: 3px solid rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

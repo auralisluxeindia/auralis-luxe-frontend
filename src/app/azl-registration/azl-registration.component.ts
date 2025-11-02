@@ -7,7 +7,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { HttpClient, HttpClientModule, HttpErrorResponse } from "@angular/common/http";
 import { Subscription, timer } from 'rxjs';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -121,16 +121,19 @@ registrationForm!: FormGroup;
     private http: HttpClient,
     private _route: Router,
     private _snackbar: MatSnackBar,
+    private route: ActivatedRoute
+
     ) {
       this.loginForm = this._formBuilder.group({
         email: ['', [Validators.required, Validators.email]],
         password: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(16)]]
       });
       this.registrationForm = this._formBuilder.group({
-        full_name: ['', [Validators.required, Validators.minLength(4)]],
-        email: ['', [Validators.required, Validators.email]],
-        password: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(16)]]
-      });
+      full_name: ['', [Validators.required, Validators.minLength(4)]],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(16)]],
+      confirm_password: ['']
+    });
       
       effect(() => {
         if (this.showOtpContainer()) {
@@ -142,8 +145,24 @@ registrationForm!: FormGroup;
         allowSignalWrites: true
       });
     }
-
+adminInviteMode = false;
+  inviteToken = '';
 ngOnInit(): void {
+  this.route.queryParams.subscribe((params) => {
+      const token = params['token'];
+      if (token) {
+        this.adminInviteMode = true;
+        this.inviteToken = token;
+
+        // Hide normal signup fields when invite link is used
+        this.registrationForm.removeControl('full_name');
+        this.registrationForm.removeControl('email');
+        this.registrationForm.addControl(
+          'confirm_password',
+          this._formBuilder.control('', [Validators.required])
+        );
+      }
+    });
   this.ngZone.runOutsideAngular(() => {
     setInterval(() => {
       this.ngZone.run(() => this.changeText());
@@ -152,11 +171,6 @@ ngOnInit(): void {
 }
 
 
-
-    ngOnDestroy() {
-    
-
-    }
 
 
 
@@ -195,6 +209,39 @@ throttleRemaining: number = 0;
 cooldown: number = 0;
 
 onSubmit() {
+    if (this.adminInviteMode) {
+      this.handleAdminInviteSignup();
+    } else {
+      this.handleNormalSignup();
+    }
+  }
+
+  private handleAdminInviteSignup() {
+    const password = this.registrationForm.get('password')?.value;
+    const confirm = this.registrationForm.get('confirm_password')?.value;
+
+    if (password !== confirm) {
+      this._snackbar.open('Passwords do not match.', 'Close', { duration: 3000 });
+      return;
+    }
+
+    this.loading = true;
+    this._azlAuth
+      .completeAdminSignup({ token: this.inviteToken, password })
+      .subscribe({
+        next: (res) => {
+          this._snackbar.open('Admin signup successful! Redirecting...', 'Close', { duration: 3000 });
+          setTimeout(() => this._route.navigate(['/login']), 1500);
+        },
+        error: (err) => {
+          this.loading = false;
+          console.error('Signup Error:', err);
+          this._snackbar.open(err.error?.message || 'Something went wrong', 'Close', { duration: 3000 });
+        }
+      });
+  }
+
+  private handleNormalSignup() {
   if (this.registrationForm.invalid || this.loading || this.cooldown > 0) return;
 
   this.loading = true;
@@ -252,7 +299,9 @@ onSubmit() {
       }
     }
   });
-}
+  }
+
+
 
 
 
@@ -302,7 +351,7 @@ onSubmittingOTP() {
         );
 
         localStorage.setItem('azl_token', res?.token);
-        localStorage.setItem('azl_user', JSON.stringify(res?.user));
+        this._azlAuth.setUser(res.user);
 
         this._route.navigate(['/dashboard']);
         return;

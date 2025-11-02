@@ -225,7 +225,7 @@ onSubmit() {
           });
 
           localStorage.setItem('azl_token', response.token);
-          localStorage.setItem('azl_user', JSON.stringify(response.user));
+          this._azlAuth.setUser(response.user);
           this._route.navigate(['/']);
         } else {
           this._snackbar.open(response.message || 'Login failed.', 'Close', {

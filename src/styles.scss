@@ -42,7 +42,7 @@ body {
   .mdc-notched-outline__notch,
 .mdc-text-field--outlined:not(.mdc-text-field--disabled):not(.mdc-text-field--focused)
   .mdc-notched-outline__trailing {
-  border-color: #e4a1b2 !important; /* Auralis Luxe rose-gold base */
+  border-color: #91203d !important; /* Auralis Luxe rose-gold base */
   transition: border-color 0.3s ease;
 }
 
@@ -89,7 +89,7 @@ body {
 /* Keep the rest of the outline in your theme color */
 .mdc-notched-outline__leading,
 .mdc-notched-outline__notch {
-  border-color: #e4a1b2 !important;
+  border-color: #91203d !important;
 }
 .mat-mdc-form-field.mat-mdc-form-field.mat-mdc-form-field.mat-mdc-form-field.mat-mdc-form-field.mat-mdc-form-field .mdc-notched-outline__notch{
   border-right: none !important;
@@ -151,7 +151,7 @@ body {
 .mat-focused {
   .mdc-text-field--outlined:not(.mdc-text-field--disabled)
     .mdc-text-field__input {
-    color: #e4a1b2 !important;
+    color: #91203d !important;
   }
 }
 
@@ -317,4 +317,19 @@ body {
 .mat-mdc-input-element:disabled {
   color: #999 !important; /* Dim text color */
   cursor: not-allowed;
+}
+
+.mat-mdc-checkbox .mdc-checkbox__background {
+  border: 1.5px solid #374151 !important; /* gray-700 border */
+  background-color: #fff !important; /* white background for contrast */
+  border-radius: 4px;
+}
+
+.mat-mdc-checkbox.mat-mdc-checkbox-checked .mdc-checkbox__background {
+  background-color: #91203d !important; /* blue-600 */
+  border-color: #91203d !important;
+}
+
+.mat-mdc-checkbox .mdc-checkbox__checkmark {
+  color: white !important; /* white tick on blue */
 }

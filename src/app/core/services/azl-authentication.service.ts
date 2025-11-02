@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
 @Injectable({
@@ -8,8 +8,15 @@ import { catchError, map } from 'rxjs/operators';
 })
 export class AzlAuthenticationService {
   private baseUrl = 'http://localhost:5000/api/auth';
+  private currentUserSubject = new BehaviorSubject<any>(null);
+  currentUser$ = this.currentUserSubject.asObservable();
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+    const storedUser = localStorage.getItem('azl_user');
+    if (storedUser) {
+      this.currentUserSubject.next(JSON.parse(storedUser));
+    }
+  }
 
   login(email: string, password: string): Observable<any> {
     return this.http.post(`${this.baseUrl}/login`, { email, password }).pipe(
@@ -90,4 +97,15 @@ signupUser(payload: any): Observable<any> {
   );
 }
 
+completeAdminSignup(data: { token: string; password: string }) {
+  return this.http.post(`${this.baseUrl}/complete-admin-signup`, data);
+}
+
+ setUser(user: any) {
+    localStorage.setItem('azl_user', JSON.stringify(user));
+    this.currentUserSubject.next(user);
+  }
+getCurrentUser() {
+    return this.currentUserSubject.value;
+  }
 }
