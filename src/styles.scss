@@ -35,3 +35,286 @@ body {
 
 
 }
+/* Default outline color (no hover, no focus) */
+.mdc-text-field--outlined:not(.mdc-text-field--disabled):not(.mdc-text-field--focused)
+  .mdc-notched-outline__leading,
+.mdc-text-field--outlined:not(.mdc-text-field--disabled):not(.mdc-text-field--focused)
+  .mdc-notched-outline__notch,
+.mdc-text-field--outlined:not(.mdc-text-field--disabled):not(.mdc-text-field--focused)
+  .mdc-notched-outline__trailing {
+  border-color: #e4a1b2 !important; /* Auralis Luxe rose-gold base */
+  transition: border-color 0.3s ease;
+}
+
+/* Hover state — slightly darker rose */
+.mdc-text-field--outlined:not(.mdc-text-field--disabled):not(.mdc-text-field--focused):hover
+  .mdc-notched-outline__leading,
+.mdc-text-field--outlined:not(.mdc-text-field--disabled):not(.mdc-text-field--focused):hover
+  .mdc-notched-outline__notch,
+.mdc-text-field--outlined:not(.mdc-text-field--disabled):not(.mdc-text-field--focused):hover
+  .mdc-notched-outline__trailing {
+  border-color: #cf8b9d !important; /* darker blush on hover */
+}
+
+
+/* Change the border focus color of input fields */
+.mdc-text-field--outlined:not(.mdc-text-field--disabled).mdc-text-field--focused
+  .mdc-notched-outline__leading,
+.mdc-text-field--outlined:not(.mdc-text-field--disabled).mdc-text-field--focused
+  .mdc-notched-outline__notch,
+.mdc-text-field--outlined:not(.mdc-text-field--disabled).mdc-text-field--focused
+  .mdc-notched-outline__trailing {
+  border-color: #cf8b9d !important;
+}
+
+// This style is applied since one line was coming at the left side of input box when hover
+.mat-mdc-form-field.mat-mdc-form-field.mat-mdc-form-field.mat-mdc-form-field.mat-mdc-form-field.mat-mdc-form-field
+  .mdc-notched-outline__notch {
+  border-left: none !important;
+}
+
+// This style is to change the color of label when we hover over input fields
+.mat-focused .mdc-floating-label--float-above {
+  color: #cf8b9d !important;
+}
+.mdc-floating-label {
+  color: #6f797a !important;
+  font-size: 14px;
+}
+/* Remove (make transparent) the left border of the trailing piece */
+.mdc-notched-outline__trailing {
+  border-left-color: transparent !important;
+}
+
+/* Keep the rest of the outline in your theme color */
+.mdc-notched-outline__leading,
+.mdc-notched-outline__notch {
+  border-color: #e4a1b2 !important;
+}
+.mat-mdc-form-field.mat-mdc-form-field.mat-mdc-form-field.mat-mdc-form-field.mat-mdc-form-field.mat-mdc-form-field .mdc-notched-outline__notch{
+  border-right: none !important;
+}
+
+ .mat-mdc-snack-bar-container {
+  background: #f9e3e9 !important; /* soft pink tone */
+  color: #000 !important;          /* black text */
+  border-radius: 8px !important;
+  box-shadow: 0 4px 10px rgba(228, 161, 178, 0.4);
+  font-weight: 500;
+}
+
+ .mat-mdc-snack-bar-label {
+  color: #000 !important; /* force black text */
+}
+
+ .mat-mdc-snack-bar-action {
+  color: #000 !important; /* make action button black */
+  font-weight: 700;
+}
+
+ .mat-mdc-snack-bar-action .mat-mdc-button-touch-target::after {
+  content: '×' !important; /* replace button label with X */
+  font-size: 20px;
+  font-weight: bold;
+  color: #000;
+}
+
+ .mat-mdc-snack-bar-action button {
+  visibility: hidden; /* hide original text */
+}
+
+.mat-mdc-snack-bar-action button::after {
+  visibility: visible;
+  content: '×';
+  font-size: 20px;
+  font-weight: 700;
+  color: #000;
+  margin-left: 8px;
+}
+
+// This below style is for increading the border radius of input field to 12px on left and right side
+.mdc-text-field--outlined .mdc-notched-outline .mdc-notched-outline__leading {
+  border-top-left-radius: 12px !important;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 12px !important;
+}
+.mdc-text-field--outlined .mdc-notched-outline .mdc-notched-outline__trailing {
+  border-top-left-radius: 0;
+  border-top-right-radius: 12px !important;
+  border-bottom-right-radius: 12px !important;
+  border-bottom-left-radius: 0;
+}
+
+// To change the color of input field when I focus on it
+
+.mat-focused {
+  .mdc-text-field--outlined:not(.mdc-text-field--disabled)
+    .mdc-text-field__input {
+    color: #e4a1b2 !important;
+  }
+}
+
+.mdc-text-field--outlined:not(.mdc-text-field--disabled)
+  .mdc-text-field__input {
+  color: #6f797a !important;
+}
+
+.rzm-snackbar--success,
+.rzm-snackbar--error {
+  .mat-mdc-snackbar-surface {
+    color: transparent !important;
+    border-radius: 0;
+    background-color: transparent !important;
+  }
+  .mat-mdc-snackbar-surface {
+    box-shadow: none !important;
+  }
+}
+.page-wrapper.toggled .sidebar {
+  left: -300px;
+}
+
+// angular perfect scrollbar style
+.sidebar .ps.ps--scrolling-y > .ps__rail-y,
+.sidebar > .ps.ps--scrolling-x > .ps__rail-x,
+.ps .ps__rail-x:hover,
+.ps .ps__rail-y:hover,
+.ps .ps__rail-x:focus,
+.ps .ps__rail-y:focus,
+.ps .ps__rail-x.ps--clicking,
+.ps .ps__rail-y.ps--clicking {
+  background-color: transparent !important;
+}
+
+.sidebar .ps.ps--active-y > .ps__rail-y:hover,
+.sidebar > .ps.ps--active-y > .ps__rail-y.ps--clicking {
+  width: 10px !important;
+}
+
+.ps__thumb-y {
+  background-color: #fff !important;
+  width: 6px !important;
+  border-radius: 0px !important;
+  opacity: 0.5;
+}
+
+.mat-mdc-select-value {
+  color: #fff;
+  font-size: 12px;
+}
+
+.mat-mdc-select-panel {
+  border-top-left-radius: 12px !important;
+  border-top-right-radius: 12px !important;
+  border-bottom-left-radius: 12px !important;
+  border-bottom-right-radius: 12px !important;
+  background: #444 !important;
+  border-color: #111111 #0a0a0a black;
+  background-image: -webkit-linear-gradient(
+    top,
+    transparent,
+    rgba(0, 0, 0, 0.4)
+  );
+  background-image: -moz-linear-gradient(top, transparent, rgba(0, 0, 0, 0.4));
+  background-image: -o-linear-gradient(top, transparent, rgba(0, 0, 0, 0.4));
+  background-image: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.4));
+  -webkit-box-shadow: inset 0 1px rgba(255, 255, 255, 0.1),
+    0 1px 1px rgba(0, 0, 0, 0.2);
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.1), 0 1px 1px rgba(0, 0, 0, 0.2);
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  .mat-mdc-option .mdc-list-item__primary-text {
+    color: #fff;
+    font-size: 12px;
+  }
+}
+
+.ngx-slider .ngx-slider-pointer {
+  outline: none;
+  background-color: #6f41d2 !important;
+}
+.ngx-slider .ngx-slider-selection {
+  background-color: #ccc;
+}
+.ngx-slider .ngx-slider-tick:nth-child(1) {
+  background-color: #fe7c8a;
+  box-shadow: 1px 1px 3px rgba(254, 124, 138, 0.4);
+}
+
+.ngx-slider .ngx-slider-tick:nth-child(2) {
+  background-color: #f68559;
+  box-shadow: 1px 1px 3px rgba(246, 133, 89, 0.4);
+}
+
+.ngx-slider .ngx-slider-tick:nth-child(3) {
+  background-color: #ec930c;
+  box-shadow: 1px 1px 3px rgba(236, 147, 12, 0.4);
+}
+
+.ngx-slider .ngx-slider-tick:nth-child(4) {
+  background-color: #48bb74;
+  box-shadow: 1px 1px 3px rgba(72, 187, 116, 0.4);
+}
+
+.ngx-slider .ngx-slider-tick:nth-child(5) {
+  background-color: #9aa1fa;
+  box-shadow: 1px 1px 3px rgba(154, 161, 250, 0.4);
+}
+
+.ngx-slider .ngx-slider-pointer.ngx-slider-active::after {
+  background-color: #fff !important;
+}
+.ngx-slider .ngx-slider-bubble:nth-child(1) {
+  color: #ff6347 !important;
+}
+
+.ngx-slider .ngx-slider-bubble:nth-child(2) {
+  color: #ffa07a !important;
+}
+
+.ngx-slider .ngx-slider-bubble:nth-child(3) {
+  color: #ffd700 !important;
+}
+
+.ngx-slider .ngx-slider-bubble:nth-child(4) {
+  color: #9acd32 !important;
+}
+
+.ngx-slider .ngx-slider-bubble:nth-child(5) {
+  color: #6b8e23 !important;
+}
+.ngx-slider .ngx-slider-bubble {
+  font-size: 12px !important;
+  color: #bfabea !important;
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+  display: none !important;
+}
+.ql-snow * {
+  box-sizing: border-box;
+  color: #fff;
+}
+
+.mat-mdc-form-field.mat-mdc-form-field-disabled {
+  opacity: 0.6;
+}
+
+.mat-mdc-text-field-wrapper.mdc-text-field--disabled {
+  .mat-mdc-notch-piece {
+    border-color: #6f797a !important;
+    border-width: var(--mdc-outlined-text-field-outline-width);
+  }
+}
+
+.mat-mdc-form-field.mat-mdc-form-field-disabled .mdc-notched-outline {
+  border-color: #ccc !important;
+}
+
+.mat-mdc-input-element:disabled {
+  color: #999 !important; /* Dim text color */
+  cursor: not-allowed;
+}

@@ -1,0 +1,296 @@
+<!-- Due to time constrain copied Login and Signup Screen from my own Project NordResume. Visit it at https://nordresume.com/ -->
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-6 info-section">
+            <div class="pre-login-right-side">
+                <div class="pre-login-left-side">
+                    <div class="scrolling-column-wrapper">
+                        <span class="scrolling-column-wrapper__heading">
+                            <svg width="46" height="46" style="text-align: center; width: 100%;" viewBox="0 0 46 46" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <rect x="3" y="3" width="40" height="40" rx="20" fill="#ED2052" fill-opacity="0.32">
+                                </rect>
+                                <rect x="3" y="3" width="40" height="40" rx="20" stroke="#ED2052" stroke-opacity="0.2"
+                                    stroke-width="6">
+                                </rect>
+                                <g filter="url(#filter0_d_2821_5839)">
+                                    <path
+                                        d="M26.2619 18.3333L22.7976 12L19.3333 18.3333L13 21.7976L19.3333 25.2619L22.7976 31.5952L26.2619 25.2619L32.5952 21.7976L26.2619 18.3333Z"
+                                        fill="#FF5656"></path>
+                                    <path d="M26.2621 18.3333L22.7979 12V21.7976L26.2621 18.3333Z" fill="#FFA4A3">
+                                    </path>
+                                    <path d="M22.7973 21.7976V12L19.333 18.3333L22.7973 21.7976Z" fill="#FFA17A"></path>
+                                    <path d="M22.7979 21.7973H32.5955L26.2621 18.333L22.7979 21.7973Z" fill="#ED2052">
+                                    </path>
+                                    <path d="M22.7979 31.5955L26.2621 25.2621L22.7979 21.7979V31.5955Z" fill="#ED2052">
+                                    </path>
+                                    <path d="M22.7979 21.7979L26.2621 25.2621L32.5955 21.7979H22.7979Z" fill="#FF5656">
+                                    </path>
+                                    <path d="M13 21.7979L19.3333 25.2621L22.7976 21.7979H13Z" fill="#ED2052"></path>
+                                </g>
+                                <defs>
+                                    <filter id="filter0_d_2821_5839" x="3" y="6" width="39.5957" height="39.5955"
+                                        filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                                        <feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood>
+                                        <feColorMatrix in="SourceAlpha" type="matrix"
+                                            values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha">
+                                        </feColorMatrix>
+                                        <feOffset dy="4"></feOffset>
+                                        <feGaussianBlur stdDeviation="5"></feGaussianBlur>
+                                        <feComposite in2="hardAlpha" operator="out"></feComposite>
+                                        <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.4 0">
+                                        </feColorMatrix>
+                                        <feBlend mode="normal" in2="BackgroundImageFix"
+                                            result="effect1_dropShadow_2821_5839"></feBlend>
+                                        <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_2821_5839"
+                                            result="shape">
+                                        </feBlend>
+                                    </filter>
+                                </defs>
+                            </svg>
+                            <p class="scrolling-column-wrapper__text" [@fadeInOut]="currentState()"
+                                (@fadeInOut.done)="animationFinished($event)">{{ currentText() }}</p>
+                        </span>
+                        <div class="scrolling-wrapper-shadow"></div>
+                        <div style="width:30%">
+                            <div class="scroll-container">
+                                <div class="scroll-content">
+                                    <ng-container *ngFor="let repeat of repeats">
+                                        <div class="box" *ngFor="let box of boxes.slice(0,3)"
+                                            style="color: #fff; background-color: transparent;">
+                                            <div class="testimonials">
+                                                <img [src]="box.image_path" alt="Testimonial Image"
+                                                    class="testimonial-img">
+                                            </div>
+                                        </div>
+                                    </ng-container>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="width:30%">
+                            <div class="scroll-container">
+                                <div class="scroll-content reverse">
+                                    <ng-container *ngFor="let repeat of repeats">
+                                        <div class="box" *ngFor="let box of boxes.slice(3,7)"
+                                            style="color: #fff; background-color: transparent;">
+                                            <div class="testimonials">
+                                                <img [src]="box.image_path" alt="Testimonial Image"
+                                                    class="testimonial-img">
+                                            </div>
+                                        </div>
+                                    </ng-container>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="width:30%">
+                            <div class="scroll-container">
+                                <div class="scroll-content">
+                                    <ng-container *ngFor="let repeat of repeats">
+                                        <div class="box" *ngFor="let box of boxes.slice(7,10)"
+                                            style="color: #fff; background-color: transparent;">
+                                            <div class="testimonials">
+                                                <img [src]="box.image_path" alt="Testimonial Image"
+                                                    class="testimonial-img">
+                                            </div>
+                                        </div>
+                                    </ng-container>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="login-user-img-wrapper">
+                        <img class="rzm-bg-right" src="../../assets/images/login-cataloge/users.png" alt="" srcset=""
+                            loading="eager">
+                        <span
+                            style="font-family: Dosis !important;font-weight: 500 !important;text-align: center;margin :75px 0 10px 0; color: #100E09;">Ethically Sourced Materials
+                            </span>
+                        <div class="available-on-wrapper">
+                            <a href="#" target="_blank">
+                                <img src="../../assets/images/login-cataloge/hallmark.png" width="60" height="80"
+                                    alt="GDPR Icon" loading="eager" style="height: 70px;">
+                            </a>
+                            <a href="#" target="_blank">
+                                <img src="../../assets/images/login-cataloge/warranty.jpg" width="70" height="70"
+                                    alt="ISO Icon" loading="eager">
+                            </a>
+                            <a href="#" target="_blank"
+                                style="background-color: transparent; outline: none; border: none;padding: 0;">
+                                <img src="../../assets/images/login-cataloge/easy-return.jpg" width="70" height="70"
+                                    alt="Postgress SQL Icon" loading="eager">
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @if(!isForgotPasswordScreen){
+        <div class="col-md-6 form-section">
+      <img src="../../assets/images/logos/auralis-luxe-logo.png" width="140px" alt="" srcset="" class="registration-card__main-logo">
+      <div class="registration-card" *ngIf="!showOtpSection" [@slideInOut]="formState">
+        <h2 class="registration-card__heading">Create Your Account</h2>
+        <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()" class="rzm-registration-form">
+          <mat-form-field appearance="outline" class="full-width" subscriptSizing="dynamic">
+            <mat-label>Full Name</mat-label>
+            <input matInput formControlName="full_name" required>
+            @if (registrationForm.get('full_name')?.hasError('required')) {
+              <mat-error>Full Name is required</mat-error>
+            }
+            @else if (registrationForm.get('full_name')?.hasError('minlength')) {
+              <mat-error>Full Name must be at least 4 characters long</mat-error>
+            }
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="full-width" subscriptSizing="dynamic">
+            <mat-label>Email</mat-label>
+            <input matInput type="email" formControlName="email" required>
+            @if (registrationForm.get('email')?.hasError('required')) {
+              <mat-error>Email is required</mat-error>
+            }
+            @else if (registrationForm.get('email')?.hasError('email')) {
+              <mat-error>Invalid email</mat-error>
+            }
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="full-width" subscriptSizing="dynamic">
+            <mat-label>Password</mat-label>
+            <input matInput type="password" formControlName="password" required>
+            @if (registrationForm.get('password')?.hasError('required')) {
+              <mat-error>Password is required</mat-error>
+            }
+            @else if (registrationForm.get('password')?.hasError('minlength')) {
+              <mat-error>Password must be at least 6 characters long</mat-error>
+            }
+            @else if (registrationForm.get('password')?.hasError('maxlength')) {
+              <mat-error>Password must be no more than 16 characters long</mat-error>
+            }
+          </mat-form-field>
+          <button
+  mat-raised-button
+  color="primary"
+  class="submit-button"
+  type="submit"
+  [ngStyle]="{
+    cursor: (loading || cooldown > 0) ? 'not-allowed' : 'pointer',
+    'pointer-events': (loading || cooldown > 0) ? 'none' : 'auto'
+  }"
+>
+  @if (loading) {
+    <div class="loader"></div>
+  }
+  @else if (cooldown > 0) {
+    <span>Wait {{ cooldown }}s</span>
+  }
+  @else {
+    <span>Submit</span>
+  }
+</button>
+
+          <a href="/login" class="rzm-registration-form__already-have-account">Already have account? Login</a>
+        </form>
+        
+        
+      </div>
+      <div *ngIf="showOtpSection" class="rzm-otp-section" [@slideInOut]="formState">
+        <img src="../../assets/images/login-cataloge/otp-verification.png" width="100" style="margin: 50px auto 10px;" alt="OTP Icon" srcset="">
+        <h2 class="rzm-otp-section__heading" style="color: #010101;">Check your inbox</h2>
+        <p class="rzm-otp-section__subtext" style="color: #010101;">We have sent an email with the OTP to <span style="font-weight: 600;">{{ registrationForm.get('email')?.value }}</span></p>
+        <app-rzm-otp-input ngDefaultControl [(ngModel)]="reactivateOtpValues" [ngModelOptions]="{ standalone: true }"
+        (ngModelChange)="handleFillEvent($event)"
+        class="rzm-otp-section__otp-input"></app-rzm-otp-input>
+
+        <p class="rzm-otp-section__final-txt" style="color: #010101;">didn't recieved the mail? <button>click to resend</button></p>
+        <button mat-raised-button color="primary" style="color: #010101;" class="submit-button" type="submit" (click)="onSubmittingOTP()" [ngStyle]="{cursor: loading ? 'not-allowed' : 'pointer'}">
+          <span *ngIf="!loading">Verify OTP</span>
+          <div class="loader" *ngIf="loading"></div>
+        </button>      
+      </div>
+      
+    </div>
+        } @else{
+        <div class="col-md-6 reset-password-container" *ngIf="isForgotPasswordScreen" [@slideInOut]="formState">
+            <img src="../../assets/images/logos/Rezoomee logo white.png" width="140px" alt="" srcset=""
+                class="registration-card__main-logo">
+            <h2 class="reset-password-container__heading">Forgot your password?</h2>
+            <form [formGroup]="resetPasswordForm" (ngSubmit)="handleResetFormSubmit()"
+                class="reset-password-container__form-field">
+                <p class="reset-password-container__sub-heading">Please enter your email ID, and we'll send you a link
+                    to reset your password.</p>
+                <mat-form-field appearance="outline" subscriptSizing="dynamic" class="full-width">
+                    <mat-label>Email</mat-label>
+                    <input matInput type="email" formControlName="email" required>
+                    <mat-error *ngIf="resetPasswordForm.get('email')?.hasError('required')">
+                        Email is required
+                    </mat-error>
+                    <mat-error *ngIf="resetPasswordForm.get('email')?.hasError('email')">
+                        Invalid email
+                    </mat-error>
+                </mat-form-field>
+               
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>New Password</mat-label>
+    <input matInput type="password" formControlName="new_password" required>
+    <mat-error *ngIf="resetPasswordForm.get('new_password')?.hasError('required')">
+      Password is required
+    </mat-error>
+  </mat-form-field>
+
+                @if(showOtpContainer()){
+                <div class="reset-password-container__otp-container">
+                    <p style="color: #010101;">OTP has been sent to your registered email id.</p>
+                    <p style="font-weight: 800; color: #010101;">One time password*</p>
+                    <app-rzm-otp-input ngDefaultControl [(ngModel)]="reactivateOtpValues"
+                        [ngModelOptions]="{ standalone: true }" (ngModelChange)="handleFillEvent($event)"
+                        [isResetOtpInput]="true" class="rzm-otp-section__reset-otp-input"></app-rzm-otp-input>
+                    <div class="resend-otp-container">
+                        @if (isTimerRunning()) {
+                        <p style="color: #010101;">You can resend OTP in {{ timer() }}</p>
+                        <button [disabled]="true" style="color: #010101;">Resend OTP</button>
+                        }
+                        @else {
+                        <p>You can resend OTP now</p>
+                        <button [disabled]="false" (click)="startTimer()" style="color: #010101;">Resend OTP</button>
+                        }
+                    </div>
+                </div>
+                }
+                @if(showOtpContainer()){
+                <button
+  mat-raised-button
+  color="primary"
+  class="submit-button"
+  type="submit"
+  [ngStyle]="{ cursor: (loading || cooldown > 0) ? 'not-allowed' : 'pointer' }"
+>
+  <ng-container *ngIf="!loading && cooldown === 0">
+    Verify OTP
+  </ng-container>
+
+  <ng-container *ngIf="loading">
+    <div class="loader"></div>
+  </ng-container>
+
+  <ng-container *ngIf="!loading && cooldown > 0">
+    Resend in {{ cooldown }}s
+  </ng-container>
+</button>
+
+                } @else{
+                <button 
+  mat-raised-button 
+  color="primary" 
+  class="submit-button" 
+  type="submit"
+  [ngStyle]="{cursor: (loading || cooldown > 0) ? 'not-allowed' : 'pointer'}">
+
+  <span *ngIf="!loading && cooldown === 0">Submit</span>
+  <span *ngIf="!loading && cooldown > 0">{{ cooldown }}s</span>
+  <div class="loader" *ngIf="loading"></div>
+</button>
+
+                }
+                <a (click)="slideinLoginScreen()"
+                    class="reset-password-container__already-have-account">Remembered? Login</a>
+            </form>
+        </div>
+        }
+    </div>
+</div>

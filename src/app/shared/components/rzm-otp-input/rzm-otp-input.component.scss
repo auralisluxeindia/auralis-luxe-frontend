@@ -1,0 +1,32 @@
+.custom-input-otp__main-wrapper {
+    display: flex;
+    gap: 0.3em;
+    font-size: 24px;
+    justify-content: center;
+    &.flex-start {
+      justify-content: flex-start;
+      margin-bottom: 12px;
+    }
+    @media only screen and (max-width: 767px){
+      gap: 0.6em;
+    }
+    .custom-otp-input {
+      aspect-ratio: 1/1;
+      width: 1.6em;
+      text-align: center;
+      border-radius: 4px;
+      font-size: inherit;
+      border: 1px solid #010101;
+      background-color: #fff;
+      outline: none;
+      color: #010101;
+      @media only screen and (max-width: 767px) {
+        width: 1.8em;
+      }
+    }
+    
+    
+    .custom-otp-input:disabled {
+      border-color: #eee;
+    }
+  }

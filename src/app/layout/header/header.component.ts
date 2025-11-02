@@ -93,4 +93,33 @@ export class HeaderComponent implements OnDestroy {
   ngOnDestroy(): void {
     this.stopPlaceholderRotation();
   }
+
+  startVoiceSearch() {
+  if (!('webkitSpeechRecognition' in window)) {
+    alert('Voice recognition not supported in this browser.');
+    return;
+  }
+
+  const recognition = new (window as any).webkitSpeechRecognition();
+  recognition.lang = 'en-IN';
+  recognition.continuous = false;
+  recognition.interimResults = false;
+
+  recognition.onstart = () => {
+    console.log('Listening...');
+  };
+
+  recognition.onresult = (event: any) => {
+    const transcript = event.results[0][0].transcript;
+    console.log('User said:', transcript);
+    this.searchQuery = transcript;
+  };
+
+  recognition.onerror = (event: any) => {
+    console.error('Speech error:', event.error);
+  };
+
+  recognition.start();
+}
+
 }

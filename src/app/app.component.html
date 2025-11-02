@@ -1,7 +1,10 @@
-<header class="fixed top-0 left-0 w-full z-50 shadow-sm bg-white">
+<header
+  class="fixed top-0 left-0 w-full z-50 shadow-sm bg-white"
+  [hidden]="hideHeader"
+>
   <app-header></app-header>
 </header>
 
-<main class="pt-[100px]">
+<main [class.pt-\[100px\]]="!hideHeader">
   <router-outlet></router-outlet>
 </main>

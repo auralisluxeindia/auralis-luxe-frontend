@@ -1,0 +1,17 @@
+<div class="custom-input-otp__main-wrapper" [ngClass]="{'flex-start': isResetOtpInput}">
+  <input
+    #inputEl
+    class="custom-otp-input"
+    *ngFor="let input of inputs.controls; let i = index"
+    (focus)="handleFocus($event)"
+    (blur)="onTouched?.()"
+    (keypress)="handleKeyPress($event, i)"
+    (input)="handleChange($event, i)"
+    (keydown)="handleKeyDown($event, i)"
+    (paste)="handlePaste($event, i)"
+    [formControl]="$any(input)"
+    [attr.autocomplete]="i === 0 ? 'one-time-code' : null"
+    type="text"
+    inputmode="numeric"
+  />
+</div>
