@@ -153,42 +153,63 @@
       <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <p class="text-base font-semibold text-gray-700">Products</p>
 
-        <div class="flex flex-wrap items-center gap-3">
-          <button mat-button [matMenuTriggerFor]="bulkMenu"
-            class="px-3 py-1 border rounded bg-white hover:bg-gray-50 flex items-center gap-1">
-            <span>Bulk upload</span>
-            <mat-icon>more_vert</mat-icon>
-          </button>
+     <div class="relative inline-block text-left">
+  <button
+    mat-icon-button
+    [matMenuTriggerFor]="bulkMenu"
+    #menuTrigger="matMenuTrigger"
+    (menuOpened)="isBulkMenuOpen = true"
+    (menuClosed)="isBulkMenuOpen = false"
+    class="flex items-center gap-2 bg-[#91203d] text-white px-4 py-2 rounded-md shadow hover:bg-[#a22f4a] transition"
+  >
+    <span>Bulk Upload</span>
+     <mat-icon
+      class="transition-transform duration-300"
+      [ngClass]="{ 'rotate-180': isBulkMenuOpen }"
+    >
+      expand_more
+    </mat-icon>
+  </button>
 
-          <mat-menu #bulkMenu="matMenu">
-            <button mat-menu-item (click)="downloadBulkCsv()">Download bulk upload CSV</button>
-            <label class="flex items-center gap-2 px-4 py-2 cursor-pointer" for="bulkCsvInput">
-              <input id="bulkCsvInput" #bulkUploadInput type="file" accept=".csv" class="hidden"
-                (change)="onBulkCsvSelected($event)" />
-              Upload bulk CSV
-            </label>
-          </mat-menu>
-        </div>
+  <mat-menu #bulkMenu="matMenu" class="rounded-lg shadow-lg">
+    <button
+      mat-menu-item
+      (click)="downloadBulkXlsx()"
+      class="!text-gray-700 hover:!bg-gray-100"
+    >
+      <mat-icon class="!text-[#010101]">download</mat-icon>
+      <span>Download Sample XLSX</span>
+    </button>
+
+    <button mat-menu-item class="!text-gray-700 hover:!bg-gray-100 relative">
+      <mat-icon class="!text-[#010101]">upload</mat-icon>
+      <span>Upload Bulk XLSX</span>
+      <input
+        id="bulkXlsxInput"
+        type="file"
+        accept=".xlsx"
+        class="absolute inset-0 opacity-0 cursor-pointer"
+        (change)="onBulkXlsxSelected($event)"
+      />
+    </button>
+  </mat-menu>
+</div>
+
+
       </div>
 
-      <!-- Create Product Section -->
       <div class="bg-white border rounded-lg shadow-sm p-6">
         <p class="text-sm font-semibold mb-4 text-gray-700">Create Product</p>
 
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <!-- Title -->
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>Title</mat-label>
             <input matInput [(ngModel)]="productForm.title" name="title" />
           </mat-form-field>
-
-          <!-- Price -->
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>Price</mat-label>
             <input matInput type="number" [(ngModel)]="productForm.price" name="price" />
           </mat-form-field>
-
-          <!-- Category -->
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>Category</mat-label>
             <select matNativeControl [(ngModel)]="productForm.category_id" (change)="onCategoryChange($event)"
@@ -240,8 +261,6 @@
         </mat-form-field>
         <div class="mt-4">
           <p class="text-sm font-medium mb-2 text-gray-600">Images (max 8)</p>
-
-          <!-- Dropzone -->
           <div
             class="upload-zone border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center text-center cursor-pointer transition relative"
             [class.upload-zone--hover]="dragging" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)"
@@ -447,13 +466,11 @@
   <div class="rounded-2xl shadow-lg p-6">
     <p class="!text-lg font-semibold text-gray-800 mb-4">Edit Category</p>
 
-    <!-- Category Name -->
     <mat-form-field appearance="outline" class="w-full mb-3">
       <mat-label>Category Name</mat-label>
       <input matInput [(ngModel)]="editCategory.name" />
     </mat-form-field>
 
-    <!-- Description -->
     <mat-form-field appearance="outline" class="w-full mb-3">
       <mat-label>Description</mat-label>
       <textarea matInput [(ngModel)]="editCategory.description" rows="3"></textarea>
@@ -516,6 +533,152 @@
         </button>
       </div>
 
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #editProductDialog let-dialogRef>
+  <div class="bg-white border rounded-2xl shadow-lg p-6 max-h-[90vh] overflow-y-auto">
+    <p class="text-base font-semibold mb-4 text-gray-800">Edit Product</p>
+
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Title</mat-label>
+        <input matInput [(ngModel)]="editProduct.title" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Price</mat-label>
+        <input matInput type="number" [(ngModel)]="editProduct.price" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Category</mat-label>
+        <select
+          matNativeControl
+          [(ngModel)]="editProduct.category_id"
+          (change)="onEditCategoryChange($event)"
+        >
+          <option [ngValue]="null">Select</option>
+          <option *ngFor="let c of categories" [value]="c.id">{{ c.name }}</option>
+        </select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Sub Category</mat-label>
+        <select
+          matNativeControl
+          [(ngModel)]="editProduct.sub_category_id"
+          [disabled]="!editSelectedSubcategories.length"
+        >
+          <option [ngValue]="null">Select</option>
+          <option *ngFor="let sub of editSelectedSubcategories" [value]="sub.id">
+            {{ sub.name }}
+          </option>
+        </select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Carats</mat-label>
+        <input matInput type="number" step="0.01" [(ngModel)]="editProduct.carats" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Gross Weight</mat-label>
+        <input matInput type="number" step="0.01" [(ngModel)]="editProduct.gross_weight" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Design Code</mat-label>
+        <input matInput [(ngModel)]="editProduct.design_code" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Purity</mat-label>
+        <input matInput [(ngModel)]="editProduct.purity" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Color</mat-label>
+        <input matInput [(ngModel)]="editProduct.color" />
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline" class="w-full mt-4">
+      <mat-label>Description</mat-label>
+      <textarea matInput rows="3" [(ngModel)]="editProduct.description"></textarea>
+    </mat-form-field>
+
+    <!-- Images -->
+    <div class="mt-4">
+      <p class="text-sm font-medium mb-2 text-gray-600">Images (max 8)</p>
+      <div
+        class="upload-zone border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center text-center cursor-pointer transition relative"
+        [class.upload-zone--hover]="dragging"
+        (dragover)="onDragOver($event)"
+        (dragleave)="onDragLeave($event)"
+        (drop)="onEditDrop($event)"
+      >
+        <input
+          type="file"
+          multiple
+          accept="image/*"
+          (change)="onEditFilesSelected($event)"
+          class="hidden"
+          id="editFilesInput"
+        />
+
+        <label for="editFilesInput" class="flex flex-col items-center space-y-2 cursor-pointer select-none">
+          <mat-icon class="text-gray-500">cloud_upload</mat-icon>
+          <span class="text-sm text-gray-700 font-medium">Drag & Drop or Click to Upload</span>
+          <span class="text-xs text-gray-400">Only image files are supported</span>
+        </label>
+
+        <div *ngIf="editPreviewUrls.length" class="mt-5 grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-3 w-full">
+          <div *ngFor="let url of editPreviewUrls; let i = index" class="relative group">
+            <img [src]="url" class="w-full h-28 object-cover rounded-lg border hover:opacity-90 transition" />
+            <button
+              type="button"
+              (click)="removeEditPreview(i)"
+              class="absolute top-1 right-1 bg-white/80 backdrop-blur-sm rounded-full p-1 border opacity-0 group-hover:opacity-100 transition"
+            >
+              <mat-icon class="text-sm text-gray-700">close</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Buttons -->
+    <div class="flex justify-end gap-3 mt-5">
+      <button
+        type="button"
+        (click)="dialogRef.close()"
+        class="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 text-sm font-medium hover:bg-gray-100 transition"
+      >
+        Cancel
+      </button>
+
+      <button
+        type="button"
+        (click)="updateProduct(dialogRef)"
+        class="px-5 py-2 rounded-lg bg-[#91203d] text-white text-sm font-medium hover:bg-[#7d1b35] active:bg-[#6b1930] transition"
+        [disabled]="isUpdating"
+      >
+        <ng-container *ngIf="!isUpdating">Update</ng-container>
+        <ng-container *ngIf="isUpdating">
+          <svg
+            class="animate-spin h-4 w-4 text-white mr-2 inline-block"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+          </svg>
+          Updating...
+        </ng-container>
+      </button>
     </div>
   </div>
 </ng-template>

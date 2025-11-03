@@ -77,11 +77,8 @@ export class ProductService {
     );
   }
 
-  bulkUploadProducts(formData: FormData) {
-    return this.http.post(
-      this.baseUrl + '/bulk',
-      formData,
-      this.getAuthHeaders()
-    );
-  }
+bulkUploadProducts(formData: FormData) {
+  return this.http.post(`${this.baseUrl}/bulk-upload`, formData, this.getAuthHeaders());
+}
+
 }

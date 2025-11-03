@@ -97,6 +97,9 @@ export class ProductManagementComponent implements OnInit {
 
   // dragging state reused
   dragging = false;
+isUpdating: any;
+editSelectedSubcategories: { id: number; name: string }[] = [];
+
 
   constructor(
     private service: ProductService,
@@ -560,30 +563,65 @@ createProduct() {
   // -------------------------------
   // Edit product dialog
   // -------------------------------
-  openEditProductDialog(product: any) {
-    // shallow copy
-    this.editProduct = { ...product, images: Array.isArray(product.images) ? [...product.images] : [] };
-    this.editSelectedFiles = [];
-    this.editPreviewUrls = [];
-    this.dialog.open(this.editProductDialog, { width: '900px', panelClass: 'edit-product-dialog' });
-  }
+// ✅ OPEN EDIT DIALOG
+openEditProductDialog(product: any): void {
+  this.editProduct = {
+    ...product,
+    images: Array.isArray(product.images) ? [...product.images] : [],
+  };
+  this.editSelectedFiles = [];
+  this.editPreviewUrls = [];
 
-  onEditFilesSelected(event: any) {
+  // Match the category's subcategories
+  const selectedCategory = this.categories.find(
+    (c: any) => c.id === this.editProduct.category_id
+  );
+  this.editSelectedSubcategories = selectedCategory?.subcategories || [];
+
+  this.dialog.open(this.editProductDialog, {
+    width: '900px',
+    panelClass: 'edit-product-dialog',
+  });
+}
+
+
+onEditCategoryChange(event: any): void {
+  const selectedCategoryId = Number(event.target.value);
+  const selectedCategory = this.categories.find((c: any) => c.id === selectedCategoryId);
+
+  // ✅ Ensure subcategories are proper objects (not strings)
+  this.editSelectedSubcategories = Array.isArray(selectedCategory?.subcategories)
+    ? selectedCategory.subcategories.map((sub: any) => 
+        typeof sub === 'string' ? { id: sub, name: sub } : sub
+      )
+    : [];
+
+  this.editProduct.sub_category_id = null;
+}
+
+
+
+  // ✅ FILE HANDLING
+  onEditFilesSelected(event: any): void {
     const files: FileList = event.target.files;
     this.addEditFiles(Array.from(files));
     event.target.value = '';
   }
 
-  onEditDrop(event: DragEvent) {
+  onEditDrop(event: DragEvent): void {
     event.preventDefault();
     this.dragging = false;
-    const file = event.dataTransfer?.files;
-    if (file && file.length) this.addEditFiles(Array.from(file));
+    const files = event.dataTransfer?.files;
+    if (files && files.length) this.addEditFiles(Array.from(files));
   }
 
-  addEditFiles(files: File[]) {
-    // limit to 8 total (server)
-    const allowed = files.slice(0, 8 - (this.editSelectedFiles.length + (this.editProduct.images?.length || 0)));
+ 
+
+  addEditFiles(files: File[]): void {
+    const allowed = files.slice(
+      0,
+      8 - (this.editSelectedFiles.length + (this.editProduct.images?.length || 0))
+    );
     for (const f of allowed) {
       if (!f.type.startsWith('image/')) {
         this.snackBar.open('Only image files are allowed.', 'Close', { duration: 2500 });
@@ -596,61 +634,64 @@ createProduct() {
     }
   }
 
-  removeEditPreview(index: number) {
+  removeEditPreview(index: number): void {
     this.editPreviewUrls.splice(index, 1);
     this.editSelectedFiles.splice(index, 1);
   }
 
-  removeExistingImageFromEdit(index: number) {
-    if (!this.editProduct || !this.editProduct.images) return;
-    this.editProduct.images.splice(index, 1);
+  removeExistingImageFromEdit(index: number): void {
+    if (this.editProduct?.images) this.editProduct.images.splice(index, 1);
   }
 
- updateProduct(): void {
-  if (!this.editProduct.title || !this.editProduct.price || !this.editProduct.category_id) {
-    this.snackBar.open('Title, price and category are required.', 'Close', { duration: 3000 });
-    return;
+  
+  // ✅ REMOVE EDIT IMAGE
+  removeProductEditImage(event: Event): void {
+    event.stopPropagation();
+    this.editPreviewUrls = [];
+    this.editSelectedFiles = [];
+    this.editProduct.main_image_url = '';
   }
 
-  const fd = new FormData();
-  fd.append('title', this.editProduct.title);
-  fd.append('description', this.editProduct.description || '');
-  fd.append('price', String(this.editProduct.price));
-  fd.append('category_id', String(this.editProduct.category_id));
-
-  if (this.editProduct.sub_category_id) {
-    fd.append('sub_category_id', String(this.editProduct.sub_category_id));
-  }
-  if (this.editProduct.carats) {
-    fd.append('carats', String(this.editProduct.carats));
-  }
-  if (this.editProduct.gross_weight) {
-    fd.append('gross_weight', String(this.editProduct.gross_weight));
-  }
-
-  fd.append('design_code', this.editProduct.design_code || '');
-  fd.append('purity', this.editProduct.purity || '');
-  fd.append('color', this.editProduct.color || '');
-  fd.append('main_image_url', this.editProduct.main_image_url || '');
-
-  if (this.editSelectedFiles && this.editSelectedFiles.length) {
-    for (let i = 0; i < Math.min(this.editSelectedFiles.length, 8); i++) {
-      fd.append('images', this.editSelectedFiles[i], this.editSelectedFiles[i].name);
+  // ✅ UPDATE PRODUCT
+  updateProduct(dialogRef: any): void {
+    if (!this.editProduct.title || !this.editProduct.price || !this.editProduct.category_id) {
+      this.snackBar.open('Title, price and category are required.', 'Close', { duration: 3000 });
+      return;
     }
-  }
 
-  this.service.updateProduct(this.editProduct.id, fd).subscribe({
-    next: () => {
-      this.dialog.closeAll(); // ✅ closes the dialog safely
-      this.snackBar.open('Product updated successfully.', 'Close', { duration: 2500 });
-      this.loadProducts(true);
-    },
-    error: (err) => {
-      console.error('Update Product Error:', err);
-      this.snackBar.open('Failed to update product.', 'Close', { duration: 3000 });
-    },
-  });
-}
+    const fd = new FormData();
+    fd.append('title', this.editProduct.title);
+    fd.append('description', this.editProduct.description || '');
+    fd.append('price', String(this.editProduct.price));
+    fd.append('category_id', String(this.editProduct.category_id));
+
+    if (this.editProduct.sub_category_id)
+      fd.append('sub_category_id', String(this.editProduct.sub_category_id));
+    if (this.editProduct.carats) fd.append('carats', String(this.editProduct.carats));
+    if (this.editProduct.gross_weight) fd.append('gross_weight', String(this.editProduct.gross_weight));
+    if (this.editProduct.design_code) fd.append('design_code', this.editProduct.design_code);
+    if (this.editProduct.purity) fd.append('purity', this.editProduct.purity);
+    if (this.editProduct.color) fd.append('color', this.editProduct.color);
+    if (this.editProduct.main_image_url) fd.append('main_image_url', this.editProduct.main_image_url);
+
+    if (this.editSelectedFiles?.length) {
+      for (let i = 0; i < Math.min(this.editSelectedFiles.length, 8); i++) {
+        fd.append('images', this.editSelectedFiles[i], this.editSelectedFiles[i].name);
+      }
+    }
+
+    this.service.updateProduct(this.editProduct.id, fd).subscribe({
+      next: () => {
+        dialogRef.close();
+        this.snackBar.open('Product updated successfully.', 'Close', { duration: 2500 });
+        this.loadProducts(true);
+      },
+      error: (err) => {
+        console.error('Update Product Error:', err);
+        this.snackBar.open('Failed to update product.', 'Close', { duration: 3000 });
+      }
+    });
+  }
 
 
   // -------------------------------
@@ -670,11 +711,8 @@ createProduct() {
     });
   }
 
-  // -------------------------------
-  // Bulk upload / download CSV
-  // -------------------------------
+
   downloadBulkCsv() {
-    // ask backend for a CSV template endpoint or generate client side minimal template
     const csvHeader = [
       'title', 'description', 'price', 'category_id', 'sub_category_id',
       'carats', 'gross_weight', 'design_code', 'purity', 'color'
@@ -693,10 +731,8 @@ createProduct() {
   onBulkCsvSelected(event: any) {
     const file: File = event.target.files?.[0];
     if (!file) return;
-    // You can send file to backend for parsing and processing. Backend endpoint expected: POST /products/bulk (not provided)
     const fd = new FormData();
     fd.append('file', file);
-    // if your ProductService has bulkUpload method, call it here; otherwise show message
     if (typeof this.service.bulkUploadProducts === 'function') {
       this.service.bulkUploadProducts(fd).subscribe({
         next: (res: any) => {
@@ -743,5 +779,56 @@ onTableScroll(event: any) {
     this.loadMoreProducts();
   }
 }
+
+isBulkMenuOpen = false;
+
+toggleBulkMenu() {
+  this.isBulkMenuOpen = !this.isBulkMenuOpen;
+}
+
+downloadBulkXlsx() {
+  const link = document.createElement('a');
+  link.href = '/assets/sample_bulk_upload.xlsx';
+  link.download = 'sample_bulk_upload.xlsx';
+  link.click();
+}
+
+onBulkXlsxSelected(event: Event) {
+  const input = event.target as HTMLInputElement;
+  if (!input.files?.length) return;
+
+  const file = input.files[0];
+  const formData = new FormData();
+  formData.append('file', file);
+
+  this.productsLoading = true;
+
+  this.service.bulkUploadProducts(formData).subscribe({
+    next: (res: any) => {
+      console.log('Bulk upload result:', res);
+      this.snackBar.open(
+        `Bulk upload completed! ${res.successCount}/${res.totalRows} successful.`,
+        'Close',
+        { duration: 4000 }
+      );
+
+      setTimeout(() => {
+        this.loadProducts(true);
+      }, 800);
+    },
+    error: (err) => {
+      console.error('Bulk upload error:', err);
+      this.snackBar.open('Bulk upload failed. Check logs or error details.', 'Close', {
+        duration: 4000,
+      });
+    },
+    complete: () => {
+      this.productsLoading = false;
+      this.isBulkMenuOpen = false;
+      if (input) input.value = '';
+    },
+  });
+}
+
 
 }
