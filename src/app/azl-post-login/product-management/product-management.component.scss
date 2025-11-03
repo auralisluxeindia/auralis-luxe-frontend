@@ -1,0 +1,23 @@
+.upload-zone {
+  border-color: #d1d5db;
+  background-color: #fafafa;
+}
+
+.upload-zone:hover {
+  background-color: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.upload-zone--hover {
+  background-color: #f0f9ff;
+  border-color: #3b82f6 !important;
+}
+
+.upload-zone mat-icon {
+  transition: transform 0.2s ease;
+}
+
+.upload-zone:hover mat-icon {
+  transform: scale(1.1);
+}
+

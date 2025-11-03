@@ -42,7 +42,7 @@ body {
   .mdc-notched-outline__notch,
 .mdc-text-field--outlined:not(.mdc-text-field--disabled):not(.mdc-text-field--focused)
   .mdc-notched-outline__trailing {
-  border-color: #91203d !important; /* Auralis Luxe rose-gold base */
+  border-color: #6f797a !important; /* Auralis Luxe rose-gold base */
   transition: border-color 0.3s ease;
 }
 
@@ -55,6 +55,8 @@ body {
   .mdc-notched-outline__trailing {
   border-color: #cf8b9d !important; /* darker blush on hover */
 }
+
+
 
 
 /* Change the border focus color of input fields */
@@ -374,4 +376,68 @@ mat-chip-row mat-icon {
 
 .edit-category-dialog{
   width: 80% !important;
+}
+
+mat-form-field select[matNativeControl] {
+  background-color: #fff !important;
+  color: #000 !important;
+  box-shadow: none !important;
+  appearance: none !important;
+}
+
+mat-form-field option {
+  background-color: #fff !important;
+  color: #000 !important;
+}
+
+/* Remove number input arrows (Chrome, Safari, Edge, Opera) */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Remove number input arrows (Firefox) */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+/* Custom scrollbar for tables */
+.scrollbar-thin::-webkit-scrollbar {
+  height: 6px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: #c7c7c7;
+  border-radius: 4px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+  background-color: #f4f4f4;
+}
+.custom-tooltip {
+  background-color: #ffffff !important;
+  color: #010101 !important;
+  border: 1px solid #e0e0e0;
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  padding: 6px 10px;
+  border-radius: 6px;
+}
+/* Global Tooltip Override */
+.mat-tooltip {
+  background-color: #ffffff !important;
+  color: #010101 !important;
+  border: 1px solid #e5e5e5 !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1) !important;
+  padding: 6px 10px !important;
+  border-radius: 6px !important;
+  max-width: 300px !important;
+  white-space: normal !important;
+  line-height: 1.4 !important;
+}
+
+ .mdc-tooltip__surface{
+  color: #010101 !important;
+
 }
