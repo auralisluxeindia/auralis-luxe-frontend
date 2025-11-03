@@ -333,3 +333,45 @@ body {
 .mat-mdc-checkbox .mdc-checkbox__checkmark {
   color: white !important; /* white tick on blue */
 }
+
+
+ mat-chip-row {
+  background-color: #f8d7da !important; /* soft pink background */
+  color: #91203d !important; /* darker pink text */
+  border: 1px solid #e4a1b2 !important;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+mat-chip-row mat-icon {
+  color: #91203d !important;
+}
+
+/* === Pink theme for chips === */
+ .mat-mdc-standard-chip:not(.mdc-evolution-chip--disabled) {
+  background-color: #f2b7c5 !important; /* soft pink background */
+  border: 1px solid #d66a83 !important; /* darker pink border */
+  color: #701831 !important; /* fallback for older chip versions */
+  font-weight: 500;
+}
+
+ 
+.mat-mdc-standard-chip:not(.mdc-evolution-chip--disabled) 
+.mdc-evolution-chip__text-label {
+  color: #701831 !important; 
+}
+
+ .mat-mdc-standard-chip:focus-within {
+  box-shadow: none !important;
+}
+
+ .mat-chip-row {
+  margin: 2px !important;
+}
+.mat-mdc-form-field-bottom-align{
+  display: none !important;
+}
+
+.edit-category-dialog{
+  width: 80% !important;
+}

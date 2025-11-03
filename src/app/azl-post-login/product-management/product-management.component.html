@@ -1,1 +1,236 @@
-<p>product-management works!</p>
+<div class="bg-white rounded-2xl shadow-lg p-6 w-full max-w-5xl mx-auto mt-8">
+    <h2 class="text-2xl font-bold mb-6 text-[#91203d] text-center">
+        Product Management
+    </h2>
+
+    <div class="w-full mt-4">
+
+        <div class="flex items-center border-b border-gray-200 mb-6 text-sm font-medium text-gray-600">
+            <button (click)="activeTab = 'categories'" class="px-4 py-2 relative transition-all duration-200" [ngClass]="{
+        'text-[#91203d] font-semibold': activeTab === 'categories',
+        'text-gray-500 hover:text-[#91203d]': activeTab !== 'categories'
+      }">
+                Categories
+                <div class="absolute left-0 right-0 -bottom-[1px] h-[2px] bg-[#91203d] transition-all duration-300"
+                    *ngIf="activeTab === 'categories'">
+                </div>
+            </button>
+
+            <button (click)="activeTab = 'products'" class="ml-4 px-4 py-2 relative transition-all duration-200"
+                [ngClass]="{
+        'text-[#91203d] font-semibold': activeTab === 'products',
+        'text-gray-500 hover:text-[#91203d]': activeTab !== 'products'
+      }">
+                Products
+                <div class="absolute left-0 right-0 -bottom-[1px] h-[2px] bg-[#91203d] transition-all duration-300"
+                    *ngIf="activeTab === 'products'">
+                </div>
+            </button>
+
+            <!-- <div class="flex-1 border-b border-gray-200 ml-4"></div> -->
+        </div>
+
+        <div *ngIf="activeTab === 'categories'" class="mt-4 space-y-6">
+            <div *ngIf="hasPermission('create_categories')"
+                class="bg-gray-50 border border-gray-200 rounded-xl p-5 shadow-sm">
+                <p class="text-base font-semibold text-gray-800 mb-4">Create Category</p>
+
+                <div class="flex flex-col space-y-4">
+                    <mat-form-field appearance="outline" class="w-full">
+                        <mat-label>Category Name</mat-label>
+                        <input matInput [(ngModel)]="newCategory.name" />
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="w-full">
+                        <mat-label>Description (Optional)</mat-label>
+                        <textarea matInput rows="3" [(ngModel)]="newCategory.description"></textarea>
+                    </mat-form-field>
+
+                    <div class="relative flex flex-col items-center justify-center w-full border-2 border-dashed rounded-xl cursor-pointer transition-all duration-200 p-6"
+                        [ngClass]="dragging ? 'border-[#91203d] bg-pink-50/40' : 'border-gray-300 bg-gray-50 hover:bg-gray-100'"
+                        (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)" (drop)="onDrop($event)"
+                        (click)="fileInput.click()">
+                        <input type="file" accept="image/*" hidden #fileInput (change)="onFileSelect($event)" />
+
+                        <ng-container *ngIf="!previewUrl; else previewBlock">
+                            <mat-icon class="mb-2 text-gray-400">cloud_upload</mat-icon>
+                            <p class="text-gray-700 text-sm font-medium">
+                                Click or drag & drop an image here to upload
+                            </p>
+                            <p class="text-xs text-gray-500 mt-1">JPG, PNG up to 5MB</p>
+                        </ng-container>
+
+                        <ng-template #previewBlock>
+                            <div class="flex items-center space-x-3">
+                                <div class="relative w-14 h-14">
+                                    <img [src]="previewUrl" alt="Preview"
+                                        class="w-14 h-14 object-cover rounded-lg border border-gray-200 shadow-sm" />
+                                    <button (click)="removeImage($event)"
+                                        class="absolute -top-2 -right-2 flex items-center justify-center w-6 h-6 bg-white border border-gray-300 rounded-full shadow-sm hover:bg-gray-100 transition">
+                                        <mat-icon
+                                            class="text-[16px] text-gray-500 flex items-center justify-center leading-none">close</mat-icon>
+                                    </button>
+
+                                </div>
+
+                                <div class="flex flex-col">
+                                    <p class="text-sm text-gray-700 font-medium truncate max-w-[180px]">{{
+                                        selectedFileName }}</p>
+                                    <p class="text-xs text-gray-500">Selected image</p>
+                                </div>
+                            </div>
+                        </ng-template>
+                    </div>
+
+                    <mat-form-field appearance="outline" class="w-full">
+                        <mat-label>Sub-Category Name (Optional)</mat-label>
+                        <mat-chip-grid #chipGrid aria-label="Subcategory selection">
+                            <mat-chip-row *ngFor="let sub of newCategory.subcategories"
+                                (removed)="removeSubcategory(sub)"
+                                class="!bg-pink-100 !text-gray-800 !border !border-[#e4a1b2]">
+                                {{ sub }}
+                                <button matChipRemove aria-label="Remove subcategory">
+                                    <mat-icon>cancel</mat-icon>
+                                </button>
+                            </mat-chip-row>
+
+                            <input placeholder="Add subcategory..." [matChipInputFor]="chipGrid"
+                                [matChipInputSeparatorKeyCodes]="separatorKeys" [matChipInputAddOnBlur]="true"
+                                (matChipInputTokenEnd)="addSubcategoryFromChip($event)" />
+                        </mat-chip-grid>
+
+                    </mat-form-field>
+                </div>
+
+                <button (click)="createCategory()"
+                    class="mt-4 bg-[#91203d] hover:bg-[#701831] text-white font-semibold px-6 py-2 rounded-lg shadow transition-all duration-200">
+                    Create Category
+                </button>
+            </div>
+
+            <div class="mt-10">
+                <p class="text-lg font-semibold text-gray-900 mb-4 tracking-tight">All Categories</p>
+
+                <div *ngIf="categories.length === 0" class="text-gray-500 text-sm italic">
+                    No categories available.
+                </div>
+
+                <div *ngFor="let cat of categories"
+                    class="flex justify-between items-center bg-white border border-gray-200 rounded-2xl p-4 mb-3 shadow-sm">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-xl overflow-hidden bg-gray-100 flex items-center justify-center">
+                            <img *ngIf="cat.image_url" [src]="cat.image_url" alt="{{ cat.name }}"
+                                class="w-full h-full object-cover" />
+                            <mat-icon *ngIf="!cat.image_url" class="text-gray-400 text-2xl">category</mat-icon>
+                        </div>
+
+                        <div>
+                            <p class="text-[15px] font-semibold text-gray-800">{{ cat.name }}</p>
+                            <div class="flex flex-wrap gap-1 mt-1">
+                                <span *ngFor="let sub of cat.subcategories"
+                                    class="text-xs bg-pink-50 text-[#91203d] px-2.5 py-0.5 rounded-full border border-pink-100">
+                                    {{ sub.name }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <button *ngIf="hasPermission('edit_categories')" (click)="openEditDialog(cat)"
+                            class="text-xs font-medium bg-gray-100 text-gray-800 px-3 py-1.5 rounded-lg border border-gray-200">
+                            Edit
+                        </button>
+                        <button *ngIf="hasPermission('delete_categories')" (click)="deleteCategory(cat.id)"
+                            class="text-xs font-medium bg-red-50 text-red-600 px-3 py-1.5 rounded-lg border border-red-100">
+                            Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div *ngIf="activeTab === 'products'" class="text-center text-gray-500 mt-10">
+            Coming soon ✨
+        </div>
+    </div>
+
+</div>
+
+
+<ng-template #editCategoryDialog let-dialogRef>
+    <div class="rounded-2xl shadow-lg p-6">
+        <p class="!text-lg font-semibold text-gray-800 mb-4">Edit Category</p>
+
+        <!-- Category Name -->
+        <mat-form-field appearance="outline" class="w-full mb-3">
+            <mat-label>Category Name</mat-label>
+            <input matInput [(ngModel)]="editCategory.name" />
+        </mat-form-field>
+
+        <!-- Description -->
+        <mat-form-field appearance="outline" class="w-full mb-3">
+            <mat-label>Description</mat-label>
+            <textarea matInput [(ngModel)]="editCategory.description" rows="3"></textarea>
+        </mat-form-field>
+
+        <div class="mb-4">
+            <mat-chip-grid>
+                <mat-chip-row *ngFor="let sub of newCategory.subcategories" (removed)="removeSubcategory(sub)">
+                    {{ sub }}
+                    <button matChipRemove>
+                        <mat-icon>cancel</mat-icon>
+                    </button>
+                </mat-chip-row>
+            </mat-chip-grid>
+
+
+            <mat-form-field appearance="outline" class="w-full mt-2">
+                <mat-label>Add subcategory and hit Enter</mat-label>
+                <input matInput placeholder="Press Enter to add" (keydown.enter)="addEditSubcategory($event)" />
+            </mat-form-field>
+        </div>
+
+        <div class="mb-5">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Category Image</label>
+
+            <div class="relative flex flex-col items-center justify-center w-full border-2 border-dashed rounded-xl cursor-pointer transition-all duration-200 bg-gray-50"
+                [ngClass]="dragging ? 'border-[#91203d] bg-pink-50/40' : 'border-gray-300'"
+                (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)" (drop)="onEditDrop($event)"
+                (click)="editFileInput.click()">
+                <input type="file" accept="image/*" hidden #editFileInput (change)="onEditFileSelect($event)" />
+
+                <div *ngIf="editPreviewUrl; else noImage"
+                    class="relative w-24 h-24 rounded-lg overflow-hidden border border-gray-200 shadow-sm">
+                    <img [src]="editPreviewUrl" alt="Preview" class="object-cover w-full h-full" />
+                    <button (click)="removeEditImage($event)"
+                        class="absolute -top-2 -right-2 bg-white border border-gray-300 rounded-full flex items-center justify-center w-5 h-5">
+                        <mat-icon class="text-[14px] text-gray-500">close</mat-icon>
+                    </button>
+                </div>
+
+                <ng-template #noImage>
+                    <mat-icon class="mb-1 text-gray-400">cloud_upload</mat-icon>
+                    <p class="text-gray-500 text-sm font-medium">Click or drop to upload</p>
+                    <p class="text-xs text-gray-400 mt-0.5">JPG, PNG up to 5MB</p>
+                </ng-template>
+            </div>
+        </div>
+
+
+        <div class="flex justify-end gap-2 mt-4">
+            <div class="flex justify-end gap-3">
+                <button type="button" (click)="dialogRef.close()" class="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 text-sm font-medium
+           hover:bg-gray-100 transition-colors duration-150">
+                    Cancel
+                </button>
+
+                <button type="button" (click)="updateCategory(dialogRef)" class="px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm font-medium
+           hover:bg-indigo-700 active:bg-indigo-800 transition-colors duration-150">
+                    Update
+                </button>
+            </div>
+
+        </div>
+    </div>
+</ng-template>
