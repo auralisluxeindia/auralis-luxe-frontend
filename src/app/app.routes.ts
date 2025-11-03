@@ -26,6 +26,18 @@ export const routes: Routes = [
       ),
   },
   {
+  path: 'search',
+  loadComponent: () => import('./features/search-results/search-results.component').then(m => m.SearchResultsComponent)
+},
+{
+  path: ':category',
+  loadComponent: () => import('./features/search-results/search-results.component').then(m => m.SearchResultsComponent)
+},
+{
+  path: ':category/:sub',
+  loadComponent: () => import('./features/search-results/search-results.component').then(m => m.SearchResultsComponent)
+},
+  {
     path: '**',
     redirectTo: '',
   },

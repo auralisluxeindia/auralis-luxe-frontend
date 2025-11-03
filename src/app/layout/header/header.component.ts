@@ -5,11 +5,14 @@ import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { Subscription } from 'rxjs';
 import { AzlAuthenticationService } from '../../core/services/azl-authentication.service';
+import { EcomService } from '../../core/services/ecom.service';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, MatIconModule],
+  imports: [CommonModule, RouterModule, FormsModule, MatIconModule, MatMenuModule, MatButtonModule],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss']
 })
@@ -31,23 +34,140 @@ export class HeaderComponent implements OnDestroy {
   suggestionOpen = false;
 
   openMega: string | null = null;
+wishlistItems: any[] = [];
+  wishlistCount = 0;
+  isWishlistOpen = false;
+  loadingWishlist = false;
+  cartCount = 0;
 
-  wishlistCount = 3;
-  cartCount = 2;
   private userSub!: Subscription;
+  private subs = new Subscription();
 
 
-  constructor(private router: Router, private _azlAuth: AzlAuthenticationService) {
+  constructor(private router: Router, private _azlAuth: AzlAuthenticationService, private ecomService: EcomService) {
     this.startPlaceholderRotation();
+      this.ecomService.wishlistCount$.subscribe(count => {
+      this.wishlistCount = count;
+    });
+        this.subs.add(this.ecomService.wishlistCount$.subscribe(c => this.wishlistCount = c));
+
+        this.ecomService.wishlistCount$.subscribe(count => (this.wishlistCount = count));
   }
 
   ngOnInit() {
     this.userSub = this._azlAuth.currentUser$.subscribe(user => {
       this.user = user;
     });
+    this.ecomService.getCart().subscribe();
+    this.ecomService.cartCount$.subscribe(count => this.cartCount = count);
+    
   }
 
+  toggleWishlistPanel(): void {
+    if (this.isWishlistOpen) {
+      this.closeWishlistPanel();
+      return;
+    }
+    this.openWishlistPanel();
+  }
 
+  openWishlistPanel(): void {
+    this.isWishlistOpen = true;
+    this.loadWishlist();
+  }
+
+closeWishlistPanel(): void {
+    this.isWishlistOpen = false;
+  }
+
+  loadWishlist(): void {
+    this.loadingWishlist = true;
+    this.ecomService.getWishlist().subscribe({
+      next: (res: any) => {
+        this.wishlistItems = (res.items || []).map((x: any) => this.normalizeWishlistItem(x));
+        this.loadingWishlist = false;
+        // ensure header counter consistent with server
+        this.ecomService.updateWishlistCount(this.wishlistItems.length);
+      },
+      error: (err) => {
+        console.error('Failed to load wishlist', err);
+        this.loadingWishlist = false;
+      }
+    });
+  }
+
+  normalizeWishlistItem(item: any) {
+    // fix types and provide fallback fields
+    return {
+      ...item,
+      price: item.price ?? '0.00',
+      images: Array.isArray(item.images) ? item.images : (item.images ? [item.images] : []),
+      main_image_url: item.main_image_url || (item.images && item.images[0]) || null,
+      added_at: item.added_at || item.created_at || new Date().toISOString()
+    };
+  }
+
+  addToCart(item: any): void {
+    // placeholder - integrate your cart service here
+    console.log('Add to cart:', item.id, item.title);
+    // optionally call API and remove from wishlist after adding
+  }
+
+  removeFromWishlist(item: any): void {
+    if (!item?.id) return;
+    this.ecomService.removeFromWishlist(item.id).subscribe({
+      next: () => {
+        this.wishlistItems = this.wishlistItems.filter(i => i.id !== item.id);
+        const newCount = Math.max(this.wishlistCount - 1, 0);
+        this.ecomService.updateWishlistCount(newCount);
+      },
+      error: (err) => console.error('Failed to remove wishlist item', err)
+    });
+  }
+
+  moveAllToCart(): void {
+    // naive: iterate, add to cart then remove; better: batch API if you have it
+    for (const it of [...this.wishlistItems]) {
+      this.addToCart(it);
+      this.removeFromWishlist(it);
+    }
+  }
+
+  clearWishlist(): void {
+    // if you have API for clearing wishlist use it, else delete one-by-one
+    for (const it of [...this.wishlistItems]) {
+      this.removeFromWishlist(it);
+    }
+  }
+
+  // small helper - relative time display
+  timeAgo(date: string | number): string {
+    if (!date) return '';
+    const d = new Date(date);
+    const now = Date.now();
+    const sec = Math.floor((now - d.getTime()) / 1000);
+    if (sec < 60) return `${sec}s`;
+    const min = Math.floor(sec / 60);
+    if (min < 60) return `${min}m`;
+    const hr = Math.floor(min / 60);
+    if (hr < 24) return `${hr}h`;
+    const days = Math.floor(hr / 24);
+    if (days < 7) return `${days}d`;
+    const weeks = Math.floor(days / 7);
+    if (weeks < 5) return `${weeks}w`;
+    const months = Math.floor(days / 30);
+    if (months < 12) return `${months}mo`;
+    const years = Math.floor(days / 365);
+    return `${years}y`;
+  }
+
+  openWishlistPage(): void {
+    // route to wishlist page if implemented
+    // this.router.navigate(['/wishlist']);
+    console.log('Open full wishlist page');
+  }
+
+ 
   startPlaceholderRotation() {
     this.placeholderTimer = setInterval(() => {
       this.placeholderIndex = (this.placeholderIndex + 1) % this.placeholderSuggestions.length;
@@ -102,6 +222,7 @@ export class HeaderComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
+        this.subs.unsubscribe();
     this.stopPlaceholderRotation();
     this.userSub?.unsubscribe();
   }
@@ -162,4 +283,11 @@ isMenuOpen = false;
   this.isMenuOpen = !this.isMenuOpen;
 }
 
+onSearch() {
+    const query = this.searchQuery.trim();
+    if (query) {
+      this.router.navigate(['/search-results'], { queryParams: { q: query } });
+    }
+  }
+  
 }

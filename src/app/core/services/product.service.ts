@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { catchError, throwError } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class ProductService {
-  private baseUrl = 'http://localhost:5000/api/products';
+  private baseUrl = environment.apiUrl +  '/products';
 
   constructor(private http: HttpClient) {}
 
@@ -17,7 +18,6 @@ export class ProductService {
     };
   }
 
-  // Categories
   getCategories() {
     return this.http
       .get(`${this.baseUrl}/available-categories`, this.getAuthHeaders())
@@ -80,5 +80,22 @@ export class ProductService {
 bulkUploadProducts(formData: FormData) {
   return this.http.post(`${this.baseUrl}/bulk-upload`, formData, this.getAuthHeaders());
 }
+
+
+getUserDetails() {
+  return this.http.get(`${this.baseUrl}/user-details`, this.getAuthHeaders());
+}
+
+updateUserProfile(data: any) {
+  return this.http.put(`${this.baseUrl}/update-user-details`, data, this.getAuthHeaders());
+}
+
+searchProducts(query: string) {
+    return this.http.get(`${this.baseUrl}?q=${encodeURIComponent(query)}`, this.getAuthHeaders());
+  }
+
+  generateReport(productIds: number[]) {
+    return this.http.post(`${this.baseUrl}/generate-report`, { productIds }, { responseType: 'blob' });
+  }
 
 }

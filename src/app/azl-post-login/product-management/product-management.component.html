@@ -83,7 +83,7 @@
           </div>
 
           <mat-form-field appearance="outline" class="w-full">
-            <mat-label>Sub-Category Name (Optional)</mat-label>
+            <mat-label>Sub-Category Name (Optional)(Hit Enter after typing)</mat-label>
             <mat-chip-grid #chipGrid aria-label="Subcategory selection">
               <mat-chip-row *ngFor="let sub of newCategory.subcategories" (removed)="removeSubcategory(sub)"
                 class="!bg-pink-100 !text-gray-800 !border !border-[#e4a1b2]">
@@ -154,6 +154,9 @@
         <p class="text-base font-semibold text-gray-700">Products</p>
 
      <div class="relative inline-block text-left">
+
+ <div class="flex gap-3 items-center">
+  <!-- Bulk Upload button -->
   <button
     mat-icon-button
     [matMenuTriggerFor]="bulkMenu"
@@ -163,13 +166,26 @@
     class="flex items-center gap-2 bg-[#91203d] text-white px-4 py-2 rounded-md shadow hover:bg-[#a22f4a] transition"
   >
     <span>Bulk Upload</span>
-     <mat-icon
+    <mat-icon
       class="transition-transform duration-300"
       [ngClass]="{ 'rotate-180': isBulkMenuOpen }"
     >
       expand_more
     </mat-icon>
   </button>
+
+  <!-- 🧾 Generate Report Button -->
+   <button
+    mat-raised-button
+    color="primary"
+    class="bg-[#206991] text-white px-4 py-2 rounded-md shadow hover:bg-[#2b7aa8] transition"
+    (click)="openReportDialog(reportDialog)"
+  >
+    <mat-icon>description</mat-icon>
+    Generate Report
+  </button>
+</div>
+
 
   <mat-menu #bulkMenu="matMenu" class="rounded-lg shadow-lg">
     <button
@@ -681,4 +697,45 @@
       </button>
     </div>
   </div>
+</ng-template>
+
+
+
+
+<ng-template #reportDialog>
+  <h2 mat-dialog-title class="font-semibold text-lg">Generate Product Report</h2>
+
+  <mat-dialog-content class="flex flex-col gap-3 w-[500px]">
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Search Product</mat-label>
+      <input
+        matInput
+        [(ngModel)]="searchQuery"
+        (input)="searchProducts()"
+        placeholder="Type product name..."
+      />
+    </mat-form-field>
+    <div class="max-h-64 overflow-y-auto border rounded-md p-2">
+      <mat-selection-list [(ngModel)]="selectedProducts">
+        <mat-list-option
+          *ngFor="let product of searchResults"
+          [value]="product.id"
+        >
+          {{ product.title }} — ₹{{ product.price }}
+        </mat-list-option>
+      </mat-selection-list>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Cancel</button>
+    <button
+      mat-raised-button
+      color="primary"
+      [disabled]="!selectedProducts.length"
+      (click)="generateReport()"
+    >
+      Generate Report
+    </button>
+  </mat-dialog-actions>
 </ng-template>

@@ -12,6 +12,8 @@ import { MatChipInput, MatChipGrid, MatChipRow } from '@angular/material/chips';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { debounceTime, Subject } from 'rxjs';
+import { MatListModule } from '@angular/material/list';
 
 @Component({
   selector: 'app-product-management',
@@ -23,6 +25,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatFormFieldModule,
     MatInputModule,
     MatChipsModule,
+    MatListModule,
     MatIconModule,
     MatSnackBarModule,
     MatChipInput,
@@ -37,7 +40,11 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 export class ProductManagementComponent implements OnInit {
   currentDialogRef: MatDialogRef<any> | null = null;
   categories: any[] = [];
+  searchQuery = '';
+  searchResults: any[] = [];
+  selectedProducts: number[] = [];
 
+  private searchSubject = new Subject<string>();
   newCategory = {
     name: '',
     description: '',
@@ -105,7 +112,11 @@ editSelectedSubcategories: { id: number; name: string }[] = [];
     private service: ProductService,
     private dialog: MatDialog,
     private snackBar: MatSnackBar
-  ) {}
+  ) {
+    this.searchSubject.pipe(debounceTime(300)).subscribe((query) => {
+      if (query.trim().length > 1) this.fetchProducts(query);
+    });
+  }
 
   ngOnInit() {
     const userData = localStorage.getItem('azl_user');
@@ -829,6 +840,36 @@ onBulkXlsxSelected(event: Event) {
     },
   });
 }
+ openReportDialog(templateRef: TemplateRef<any>) {
+    this.dialog.open(templateRef, { width: '550px', autoFocus: false });
+  }
 
+  searchProducts() {
+    this.searchSubject.next(this.searchQuery);
+  }
+
+  fetchProducts(query: string) {
+    this.service.searchProducts(query).subscribe({
+      next: (res: any) => {
+        this.searchResults = res.products || [];
+      },
+      error: (err) => console.error('Search error:', err),
+    });
+  }
+
+  generateReport() {
+    this.service.generateReport(this.selectedProducts).subscribe({
+      next: (blob: Blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Product_Report_${Date.now()}.xlsx`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+        this.dialog.closeAll();
+      },
+      error: (err) => console.error('Report generation failed:', err),
+    });
+  }
 
 }

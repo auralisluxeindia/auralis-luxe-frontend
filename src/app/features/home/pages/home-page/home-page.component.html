@@ -1,1 +1,473 @@
-<p>home-page works!</p>
+<div class="relative w-full h-[calc(100vh-122px)] mt-[122px] overflow-hidden">
+    <owl-carousel-o [options]="carouselOptions" class="w-full h-full">
+        <ng-container *ngFor="let slide of slides">
+            <ng-template carouselSlide>
+                <div class="relative w-full h-[calc(100vh-122px)] cursor-pointer" (click)="onSlideClick(slide)">
+                    <img [src]="slide.img" alt="banner"
+                        class="w-full h-full object-cover transition-transform duration-700 hover:scale-105" />
+                </div>
+            </ng-template>
+        </ng-container>
+    </owl-carousel-o>
+</div>
+
+
+<div class="bg-gradient-to-b from-pink-50 to-white py-10">
+    <h2 class="text-3xl font-semibold text-center mb-8">Shop by Category</h2>
+    <div class="flex items-center justify-center gap-4 overflow-x-auto pb-4 scrollbar-hide">
+        <div *ngFor="let cat of categories" (click)="selectCategory(cat)"
+            class="flex flex-col items-center cursor-pointer transition-all duration-300"
+            [class.text-pink-700]="cat === selectedCategory">
+            <div class="w-20 h-20 rounded-full border-2" [class.border-pink-600]="cat === selectedCategory"
+                [class.border-gray-200]="cat !== selectedCategory">
+                <img [src]="getImage(cat.image_url)" alt="{{ cat.name }}"
+                    class="w-full h-full object-cover rounded-full" />
+            </div>
+            <p class="mt-2 text-sm font-medium whitespace-nowrap">{{ cat.name }}</p>
+            <div *ngIf="cat === selectedCategory" class="w-10 h-0.5 bg-pink-600 mt-1 rounded-full"></div>
+        </div>
+    </div>
+    <div class="container mx-auto mt-8 px-4">
+        <div *ngIf="loading" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+            <div *ngFor="let i of [1,2,3,4,5,6]" class="animate-pulse bg-gray-200 h-56 rounded-xl"></div>
+        </div>
+        <div *ngIf="!loading && products.length" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+            <div *ngFor="let p of products" class="group relative">
+                <div class="bg-white rounded-2xl shadow-sm hover:shadow-lg transition overflow-hidden flex flex-col"
+                    (mouseenter)="startImageRotation(p)" (mouseleave)="stopImageRotation(p)">
+                    <div class="relative w-full overflow-hidden">
+                        <img [src]="getCurrentImage(p)" alt="{{ p.title }}"
+                            class="w-full h-56 md:h-52 lg:h-60 object-cover transition-transform duration-500 group-hover:scale-105" />
+                        <div class="absolute left-3 bottom-3 flex gap-2">
+                            <img *ngFor="let thumb of p.images?.slice(0,3); let ti = index" [src]="thumb"
+                                (click)="setImageIndex(p, ti); $event.stopPropagation()"
+                                class="w-10 h-10 object-cover rounded-full border-2 border-white shadow-sm cursor-pointer transition transform hover:scale-110"
+                                [class.opacity-80]="getCurrentImageIndex(p) === ti" />
+                        </div>
+
+                        <div class="absolute bottom-3 right-3 flex flex-col gap-2">
+                            <button (click)="toggleWishlist(p); $event.stopPropagation()"
+                                class="bg-white/90 hover:bg-white rounded-full p-2 shadow flex items-center justify-center transition"
+                                [attr.aria-pressed]="isInWishlist(p) ? 'true' : 'false'" title="Add to wishlist"
+                                type="button">
+
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" [ngClass]="{
+    'text-gray-600 fill-none': !isInWishlist(p),
+    'text-red-500 fill-current': isInWishlist(p)
+  }" viewBox="0 0 67.949 67.949" stroke="currentColor" stroke-width="2" fill="none">
+
+                                    <path d="M62.49,11.239c-7.39-7.388-19.412-7.388-26.8,0l-1.716,1.715l-1.715-1.715c-7.388-7.389-19.411-7.389-26.799,0
+       c-7.238,7.238-7.285,18.711-0.109,26.688c6.545,7.273,25.848,22.986,26.667,23.651c0.556,0.452,1.225,0.672,1.89,0.672
+       c0.022,0,0.044,0,0.065-0.001c0.688,0.032,1.381-0.204,1.955-0.671c0.819-0.665,20.124-16.378,26.671-23.652
+       C69.774,29.95,69.727,18.477,62.49,11.239z M58.139,33.913c-5.103,5.669-19.13,17.361-24.166,21.51
+       c-5.036-4.148-19.06-15.839-24.162-21.509C4.805,28.35,4.758,20.426,9.702,15.482c2.525-2.524,5.841-3.787,9.157-3.787
+       s6.632,1.262,9.157,3.787l3.772,3.772c0.449,0.449,1.015,0.717,1.609,0.811c0.964,0.207,2.01-0.062,2.76-0.81l3.774-3.773
+       c5.051-5.049,13.267-5.048,18.315,0C63.19,20.426,63.143,28.35,58.139,33.913z" />
+
+                                    <path [ngClass]="{'opacity-0': !isInWishlist(p)}"
+                                        class="transition-opacity duration-300" fill="currentColor"
+                                        d="M33.974,58.563c-0.819-0.665-20.124-16.378-26.671-23.652c-7.176-7.977-7.129-19.45-0.109-26.688
+       c7.388-7.389,19.411-7.389,26.799,0l1.715,1.715l1.716-1.715c7.39-7.388,19.412-7.388,26.8,0
+       c7.238,7.238,7.285,18.711,0.109,26.688C59.788,42.185,40.485,57.898,39.666,58.563
+       C38.847,59.228,37.154,59.464,35.464,59.464c-0.665,0-1.334-0.22-1.89-0.672C32.755,58.127,33.974,58.563,33.974,58.563z" />
+                                </svg>
+                            </button>
+
+                            <button
+                                class="bg-white/90 hover:bg-white rounded-full p-2 shadow flex items-center justify-center transition"
+                                title="Quick View" type="button" (click)="openQuickView(p); $event.stopPropagation()">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M2.25 12s3.75-6.75 9.75-6.75S21.75 12 21.75 12s-3.75 6.75-9.75 6.75S2.25 12 2.25 12z" />
+                                    <circle cx="12" cy="12" r="3" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="p-4 flex-1 flex flex-col justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500 mb-1 truncate">{{ p.category_name }} • {{
+                                p.sub_category_name || '—' }}</p>
+
+                            <p class="text-gray-900 font-semibold text-lg mb-1 line-clamp-2 leading-tight"
+                                title="{{ p.title }}">
+                                {{ p.title }}
+                            </p>
+
+                            <div class="text-sm text-gray-600 mb-3">
+                                <span *ngIf="p.carats" class="inline-flex items-center justify-center gap-1 mr-3">
+                                    <img src="../../../../../assets/images/icons/carats.svg" class="w-3 h-3" alt="">
+                                    <span>{{ p.carats }}K</span>
+                                </span>
+                                <span *ngIf="p.gross_weight" class="inline-flex items-center justify-center gap-1 mr-3">
+                                    <img src="../../../../../assets/images/icons/weight.svg" class="w-3 h-3" alt="">
+                                    <span>{{ p.gross_weight }} gm</span>
+                                </span>
+                            </div>
+
+                            <div class="text-xl font-bold text-gray-900 mb-3">₹ {{ p.price | number }}</div>
+                        </div>
+
+                        <div class="flex items-center gap-3 mt-auto">
+                            <button (click)="toggleCart(p, $event)"
+                                class="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-sm transition" [ngClass]="
+    isInCart(p.id)
+      ? 'bg-[#91203d] text-white border-[#91203d]'
+      : 'text-gray-700 hover:bg-gray-50'
+  " type="button">
+                                {{ isInCart(p.id) ? 'Added to Cart' : 'Add to Cart' }}
+                            </button>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div *ngIf="!loading && products.length" class="flex justify-center mt-10">
+            <button class="px-6 py-2 bg-pink-600 hover:bg-pink-700 text-white rounded-full shadow-md transition">
+                Explore More →
+            </button>
+        </div>
+    </div>
+
+
+
+<div class="container mx-auto mt-14 px-4">
+  <div class="flex justify-between items-center mb-6">
+    <p class="text-2xl font-bold text-gray-900">New Arrivals</p>
+    <button
+      class="px-5 py-2 text-sm bg-[#91203d] hover:bg-[#7a1b34] text-white rounded-full shadow transition"
+    >
+      View All →
+    </button>
+  </div>
+
+  <div
+    *ngIf="loadingNewArrivals"
+    class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6"
+  >
+    <div
+      *ngFor="let i of [1, 2, 3, 4, 5, 6]"
+      class="animate-pulse bg-gray-200 h-56 rounded-xl"
+    ></div>
+  </div>
+
+   <div *ngIf="!loading && newArrivals.length" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+            <div *ngFor="let p of newArrivals" class="group relative">
+                <div class="bg-white rounded-2xl shadow-sm hover:shadow-lg transition overflow-hidden flex flex-col"
+                    (mouseenter)="startImageRotation(p)" (mouseleave)="stopImageRotation(p)">
+                    <div class="relative w-full overflow-hidden">
+                        <img [src]="getCurrentImage(p)" alt="{{ p.title }}"
+                            class="w-full h-56 md:h-52 lg:h-60 object-cover transition-transform duration-500 group-hover:scale-105" />
+                        <div class="absolute left-3 bottom-3 flex gap-2">
+                            <img *ngFor="let thumb of p.images?.slice(0,3); let ti = index" [src]="thumb"
+                                (click)="setImageIndex(p, ti); $event.stopPropagation()"
+                                class="w-10 h-10 object-cover rounded-full border-2 border-white shadow-sm cursor-pointer transition transform hover:scale-110"
+                                [class.opacity-80]="getCurrentImageIndex(p) === ti" />
+                        </div>
+
+                        <div class="absolute bottom-3 right-3 flex flex-col gap-2">
+                            <button (click)="toggleWishlist(p); $event.stopPropagation()"
+                                class="bg-white/90 hover:bg-white rounded-full p-2 shadow flex items-center justify-center transition"
+                                [attr.aria-pressed]="isInWishlist(p) ? 'true' : 'false'" title="Add to wishlist"
+                                type="button">
+
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" [ngClass]="{
+    'text-gray-600 fill-none': !isInWishlist(p),
+    'text-red-500 fill-current': isInWishlist(p)
+  }" viewBox="0 0 67.949 67.949" stroke="currentColor" stroke-width="2" fill="none">
+
+                                    <path d="M62.49,11.239c-7.39-7.388-19.412-7.388-26.8,0l-1.716,1.715l-1.715-1.715c-7.388-7.389-19.411-7.389-26.799,0
+       c-7.238,7.238-7.285,18.711-0.109,26.688c6.545,7.273,25.848,22.986,26.667,23.651c0.556,0.452,1.225,0.672,1.89,0.672
+       c0.022,0,0.044,0,0.065-0.001c0.688,0.032,1.381-0.204,1.955-0.671c0.819-0.665,20.124-16.378,26.671-23.652
+       C69.774,29.95,69.727,18.477,62.49,11.239z M58.139,33.913c-5.103,5.669-19.13,17.361-24.166,21.51
+       c-5.036-4.148-19.06-15.839-24.162-21.509C4.805,28.35,4.758,20.426,9.702,15.482c2.525-2.524,5.841-3.787,9.157-3.787
+       s6.632,1.262,9.157,3.787l3.772,3.772c0.449,0.449,1.015,0.717,1.609,0.811c0.964,0.207,2.01-0.062,2.76-0.81l3.774-3.773
+       c5.051-5.049,13.267-5.048,18.315,0C63.19,20.426,63.143,28.35,58.139,33.913z" />
+
+                                    <path [ngClass]="{'opacity-0': !isInWishlist(p)}"
+                                        class="transition-opacity duration-300" fill="currentColor"
+                                        d="M33.974,58.563c-0.819-0.665-20.124-16.378-26.671-23.652c-7.176-7.977-7.129-19.45-0.109-26.688
+       c7.388-7.389,19.411-7.389,26.799,0l1.715,1.715l1.716-1.715c7.39-7.388,19.412-7.388,26.8,0
+       c7.238,7.238,7.285,18.711,0.109,26.688C59.788,42.185,40.485,57.898,39.666,58.563
+       C38.847,59.228,37.154,59.464,35.464,59.464c-0.665,0-1.334-0.22-1.89-0.672C32.755,58.127,33.974,58.563,33.974,58.563z" />
+                                </svg>
+                            </button>
+
+                            <button
+                                class="bg-white/90 hover:bg-white rounded-full p-2 shadow flex items-center justify-center transition"
+                                title="Quick View" type="button" (click)="openQuickView(p); $event.stopPropagation()">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M2.25 12s3.75-6.75 9.75-6.75S21.75 12 21.75 12s-3.75 6.75-9.75 6.75S2.25 12 2.25 12z" />
+                                    <circle cx="12" cy="12" r="3" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="p-4 flex-1 flex flex-col justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500 mb-1 truncate">{{ p.category_name }} • {{
+                                p.sub_category_name || '—' }}</p>
+
+                            <p class="text-gray-900 font-semibold text-lg mb-1 line-clamp-2 leading-tight"
+                                title="{{ p.title }}">
+                                {{ p.title }}
+                            </p>
+
+                            <div class="text-sm text-gray-600 mb-3">
+                                <span *ngIf="p.carats" class="inline-flex items-center justify-center gap-1 mr-3">
+                                    <img src="../../../../../assets/images/icons/carats.svg" class="w-3 h-3" alt="">
+                                    <span>{{ p.carats }}K</span>
+                                </span>
+                                <span *ngIf="p.gross_weight" class="inline-flex items-center justify-center gap-1 mr-3">
+                                    <img src="../../../../../assets/images/icons/weight.svg" class="w-3 h-3" alt="">
+                                    <span>{{ p.gross_weight }} gm</span>
+                                </span>
+                            </div>
+
+                            <div class="text-xl font-bold text-gray-900 mb-3">₹ {{ p.price | number }}</div>
+                        </div>
+
+                        <div class="flex items-center gap-3 mt-auto">
+                            <button (click)="toggleCart(p, $event)"
+                                class="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-sm transition" [ngClass]="
+    isInCart(p.id)
+      ? 'bg-[#91203d] text-white border-[#91203d]'
+      : 'text-gray-700 hover:bg-gray-50'
+  " type="button">
+                                {{ isInCart(p.id) ? 'Added to Cart' : 'Add to Cart' }}
+                            </button>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+</div>
+
+<div class="container mx-auto mt-14 px-4">
+  <div class="flex justify-between items-center mb-6">
+    <p class="text-2xl font-bold text-gray-900">Trending Products</p>
+    <button
+      class="px-5 py-2 text-sm bg-[#91203d] hover:bg-[#7a1b34] text-white rounded-full shadow transition"
+    >
+      View All →
+    </button>
+  </div>
+
+  <div
+    *ngIf="loadingTrending"
+    class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6"
+  >
+    <div
+      *ngFor="let i of [1, 2, 3, 4, 5, 6]"
+      class="animate-pulse bg-gray-200 h-56 rounded-xl"
+    ></div>
+  </div>
+
+   <div *ngIf="!loading && trendingProducts.length" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+            <div *ngFor="let p of trendingProducts" class="group relative">
+                <div class="bg-white rounded-2xl shadow-sm hover:shadow-lg transition overflow-hidden flex flex-col"
+                    (mouseenter)="startImageRotation(p)" (mouseleave)="stopImageRotation(p)">
+                    <div class="relative w-full overflow-hidden">
+                        <img [src]="getCurrentImage(p)" alt="{{ p.title }}"
+                            class="w-full h-56 md:h-52 lg:h-60 object-cover transition-transform duration-500 group-hover:scale-105" />
+                        <div class="absolute left-3 bottom-3 flex gap-2">
+                            <img *ngFor="let thumb of p.images?.slice(0,3); let ti = index" [src]="thumb"
+                                (click)="setImageIndex(p, ti); $event.stopPropagation()"
+                                class="w-10 h-10 object-cover rounded-full border-2 border-white shadow-sm cursor-pointer transition transform hover:scale-110"
+                                [class.opacity-80]="getCurrentImageIndex(p) === ti" />
+                        </div>
+
+                        <div class="absolute bottom-3 right-3 flex flex-col gap-2">
+                            <button (click)="toggleWishlist(p); $event.stopPropagation()"
+                                class="bg-white/90 hover:bg-white rounded-full p-2 shadow flex items-center justify-center transition"
+                                [attr.aria-pressed]="isInWishlist(p) ? 'true' : 'false'" title="Add to wishlist"
+                                type="button">
+
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" [ngClass]="{
+    'text-gray-600 fill-none': !isInWishlist(p),
+    'text-red-500 fill-current': isInWishlist(p)
+  }" viewBox="0 0 67.949 67.949" stroke="currentColor" stroke-width="2" fill="none">
+
+                                    <path d="M62.49,11.239c-7.39-7.388-19.412-7.388-26.8,0l-1.716,1.715l-1.715-1.715c-7.388-7.389-19.411-7.389-26.799,0
+       c-7.238,7.238-7.285,18.711-0.109,26.688c6.545,7.273,25.848,22.986,26.667,23.651c0.556,0.452,1.225,0.672,1.89,0.672
+       c0.022,0,0.044,0,0.065-0.001c0.688,0.032,1.381-0.204,1.955-0.671c0.819-0.665,20.124-16.378,26.671-23.652
+       C69.774,29.95,69.727,18.477,62.49,11.239z M58.139,33.913c-5.103,5.669-19.13,17.361-24.166,21.51
+       c-5.036-4.148-19.06-15.839-24.162-21.509C4.805,28.35,4.758,20.426,9.702,15.482c2.525-2.524,5.841-3.787,9.157-3.787
+       s6.632,1.262,9.157,3.787l3.772,3.772c0.449,0.449,1.015,0.717,1.609,0.811c0.964,0.207,2.01-0.062,2.76-0.81l3.774-3.773
+       c5.051-5.049,13.267-5.048,18.315,0C63.19,20.426,63.143,28.35,58.139,33.913z" />
+
+                                    <path [ngClass]="{'opacity-0': !isInWishlist(p)}"
+                                        class="transition-opacity duration-300" fill="currentColor"
+                                        d="M33.974,58.563c-0.819-0.665-20.124-16.378-26.671-23.652c-7.176-7.977-7.129-19.45-0.109-26.688
+       c7.388-7.389,19.411-7.389,26.799,0l1.715,1.715l1.716-1.715c7.39-7.388,19.412-7.388,26.8,0
+       c7.238,7.238,7.285,18.711,0.109,26.688C59.788,42.185,40.485,57.898,39.666,58.563
+       C38.847,59.228,37.154,59.464,35.464,59.464c-0.665,0-1.334-0.22-1.89-0.672C32.755,58.127,33.974,58.563,33.974,58.563z" />
+                                </svg>
+                            </button>
+
+                            <button
+                                class="bg-white/90 hover:bg-white rounded-full p-2 shadow flex items-center justify-center transition"
+                                title="Quick View" type="button" (click)="openQuickView(p); $event.stopPropagation()">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M2.25 12s3.75-6.75 9.75-6.75S21.75 12 21.75 12s-3.75 6.75-9.75 6.75S2.25 12 2.25 12z" />
+                                    <circle cx="12" cy="12" r="3" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="p-4 flex-1 flex flex-col justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500 mb-1 truncate">{{ p.category_name }} • {{
+                                p.sub_category_name || '—' }}</p>
+
+                            <p class="text-gray-900 font-semibold text-lg mb-1 line-clamp-2 leading-tight"
+                                title="{{ p.title }}">
+                                {{ p.title }}
+                            </p>
+
+                            <div class="text-sm text-gray-600 mb-3">
+                                <span *ngIf="p.carats" class="inline-flex items-center justify-center gap-1 mr-3">
+                                    <img src="../../../../../assets/images/icons/carats.svg" class="w-3 h-3" alt="">
+                                    <span>{{ p.carats }}K</span>
+                                </span>
+                                <span *ngIf="p.gross_weight" class="inline-flex items-center justify-center gap-1 mr-3">
+                                    <img src="../../../../../assets/images/icons/weight.svg" class="w-3 h-3" alt="">
+                                    <span>{{ p.gross_weight }} gm</span>
+                                </span>
+                            </div>
+
+                            <div class="text-xl font-bold text-gray-900 mb-3">₹ {{ p.price | number }}</div>
+                        </div>
+
+                        <div class="flex items-center gap-3 mt-auto">
+                            <button (click)="toggleCart(p, $event)"
+                                class="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-sm transition" [ngClass]="
+    isInCart(p.id)
+      ? 'bg-[#91203d] text-white border-[#91203d]'
+      : 'text-gray-700 hover:bg-gray-50'
+  " type="button">
+                                {{ isInCart(p.id) ? 'Added to Cart' : 'Add to Cart' }}
+                            </button>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+</div>
+
+
+
+    <ng-template #quickViewDialog let-dialogRef>
+        <div class="w-full max-w-[1020px] mx-auto p-4 md:p-6">
+            <div class="rounded-2xl overflow-hidden md:flex md:gap-6">
+                <div class="md:w-1/2 p-4 md:p-6 flex flex-col gap-4">
+                    <div class="relative w-full border border-gray-100 rounded-lg overflow-hidden bg-gray-50"
+                        (mousemove)="onZoomMove($event)" (mouseenter)="onZoomEnter($event)"
+                        (mouseleave)="onZoomLeave()">
+                        <img [src]="getQuickImageUrl()" alt="{{ selectedProduct?.title }}"
+                            class="w-full h-[420px] object-contain bg-white" loading="lazy" />
+                        <div *ngIf="zoomActive" class="absolute inset-0 pointer-events-none"
+                            [ngStyle]="{ 'background-image': 'url(' + getQuickImageUrl() + ')', 'background-position': zoomBgPos, 'background-size': '200%' }">
+                        </div>
+                        <div class="absolute left-4 bottom-4 flex items-center gap-2">
+                            <ng-container *ngFor="let img of selectedProduct?.images || []; let i = index">
+                                <img [src]="img" (click)="selectQuickImage(i)"
+                                    class="w-12 h-12 object-cover rounded-md border-2 cursor-pointer shadow-sm transition transform hover:scale-105"
+                                    [class.border-[#91203d]]="selectedImageIndex === i"
+                                    [class.border-white]="selectedImageIndex !== i" />
+                            </ng-container>
+                        </div>
+                    </div>
+                </div>
+                <div class="md:w-1/2 p-4 md:p-6 flex flex-col justify-between">
+                    <div>
+                        <p class="text-sm text-gray-500">{{ selectedProduct?.category_name }} • {{
+                            selectedProduct?.sub_category_name || '—' }}</p>
+                        <h3 class="text-2xl font-semibold text-gray-900 mt-2 mb-3">{{ selectedProduct?.title }}</h3>
+
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="inline-flex items-center gap-2 text-gray-700">
+                                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z" stroke-width="1.4" />
+                                </svg>
+                                <span class="text-sm">{{ selectedProduct?.views || 0 }} views</span>
+                            </div>
+
+                            <div class="inline-flex items-center gap-2 text-gray-700">
+                                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path
+                                        d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 6 3.5 4 5.5 4c1.54 0 2.9.99 3.5 2.09C10.6 4.99 11.96 4 13.5 4 15.5 4 17 6 17 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+                                        stroke-width="0.8" />
+                                </svg>
+                                <span class="text-sm">{{ selectedProduct?.wishlist_count || 0 }} wishlist</span>
+                            </div>
+
+                            <div class="inline-flex items-center gap-2 text-gray-700">
+                                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M3 3h18v4H3zM3 9h18v12H3z" stroke-width="1.2" />
+                                </svg>
+                                <span class="text-sm">{{ selectedProduct?.sold_count || 0 }} sold</span>
+                            </div>
+                        </div>
+
+                        <p class="text-gray-700 mb-4 whitespace-pre-line">{{ selectedProduct?.description }}</p>
+                        <div class="mt-3">
+                            <p class="text-sm text-gray-500 mb-2">Specifications</p>
+                            <table class="w-full text-sm text-gray-700">
+                                <tbody>
+                                    <tr>
+                                        <td class="py-2 font-medium">Design code</td>
+                                        <td class="py-2 text-right">{{ selectedProduct?.design_code || '—' }}</td>
+                                    </tr>
+                                    <tr class="bg-gray-50">
+                                        <td class="py-2 font-medium">Carats</td>
+                                        <td class="py-2 text-right">{{ selectedProduct?.carats || '—' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2 font-medium">Gross weight</td>
+                                        <td class="py-2 text-right">{{ selectedProduct?.gross_weight || '—' }} gm</td>
+                                    </tr>
+                                    <tr class="bg-gray-50">
+                                        <td class="py-2 font-medium">Purity</td>
+                                        <td class="py-2 text-right">{{ selectedProduct?.purity || '—' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2 font-medium">Color</td>
+                                        <td class="py-2 text-right">{{ selectedProduct?.color || '—' }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="mt-6 flex items-center gap-4">
+                        <button (click)="addToCart(selectedProduct); closeQuickView()"
+                            class="flex-1 px-4 py-3 rounded-lg border border-gray-200 text-sm text-gray-800 hover:bg-gray-50 transition">
+                            Add to cart
+                        </button>
+
+                        <button (click)="buyNow(selectedProduct); closeQuickView()"
+                            class="px-5 py-3 rounded-lg bg-[#91203d] text-white font-medium hover:bg-[#7d1b35] transition">
+                            Buy now
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+    

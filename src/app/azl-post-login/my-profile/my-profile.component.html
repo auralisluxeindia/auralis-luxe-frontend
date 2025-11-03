@@ -1,1 +1,60 @@
-<p>my-profile works!</p>
+<div class="container mx-auto mt-10 px-4">
+  <div class="bg-white rounded-2xl shadow-lg p-8 max-w-3xl mx-auto">
+    <p class="text-2xl font-semibold text-gray-800 mb-6">My Profile</p>
+
+    <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <mat-form-field appearance="outline">
+        <mat-label>Full Name</mat-label>
+        <input matInput formControlName="full_name" placeholder="Enter your full name" />
+        <mat-error *ngIf="profileForm.get('full_name')?.invalid">Full name is required</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Email</mat-label>
+        <input matInput formControlName="email" type="email" placeholder="Your email" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Phone Number</mat-label>
+        <input matInput formControlName="phone" placeholder="Enter phone number" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>City</mat-label>
+        <input matInput formControlName="city" placeholder="Enter your city" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>State</mat-label>
+        <input matInput formControlName="state" placeholder="Enter your state" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Country</mat-label>
+        <input matInput formControlName="country" placeholder="Enter your country" />
+      </mat-form-field>
+      <mat-form-field class="md:col-span-2" appearance="outline">
+        <mat-label>Address</mat-label>
+        <textarea matInput formControlName="address" rows="3" placeholder="Enter full address"></textarea>
+      </mat-form-field>
+      <div class="md:col-span-2 text-right">
+        <button
+          
+          class="bg-[#91203d] hover:bg-[#7a1b34] text-white px-8 py-2 rounded-full transition">
+          {{ saving ? 'Saving...' : 'Save Changes' }}
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Analytics Section -->
+  <div *ngIf="analytics" class="mt-10 grid md:grid-cols-3 gap-6">
+    <div class="bg-white rounded-2xl shadow p-6 text-center">
+      <p class="text-sm text-gray-500">Total Orders</p>
+      <p class="text-2xl font-bold text-[#91203d]">{{ analytics.total_orders }}</p>
+    </div>
+    <div class="bg-white rounded-2xl shadow p-6 text-center">
+      <p class="text-sm text-gray-500">Wishlist Items</p>
+      <p class="text-2xl font-bold text-[#91203d]">{{ analytics?.wishlist?.total_items || 0 }}</p>
+    </div>
+    <div class="bg-white rounded-2xl shadow p-6 text-center">
+      <p class="text-sm text-gray-500">Cart Items</p>
+      <p class="text-2xl font-bold text-[#91203d]">{{ analytics?.cart?.total_items || 0 }}</p>
+    </div>
+  </div>
+</div>

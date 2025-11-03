@@ -1,0 +1,23 @@
+/* dialog panel tweak */
+.quick-view-dialog-panel .mat-dialog-container {
+  padding: 0 !important;
+  background: transparent;
+  box-shadow: none;
+}
+
+/* zoom overlay visual (uses inline bg styles in template) */
+.quick-view-zoom {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-repeat: no-repeat;
+  background-size: 200%;
+  transition: background-position 30ms linear;
+}
+
+/* responsive adjustments */
+@media (max-width: 768px) {
+  .quick-view-dialog-panel .mat-dialog-container {
+    padding: 0.5rem !important;
+  }
+}
